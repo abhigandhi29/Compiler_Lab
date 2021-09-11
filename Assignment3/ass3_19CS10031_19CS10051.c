@@ -3,6 +3,7 @@
 #include "header.h"
 extern char* yytext;
 
+
 int main(){
   int token;
   while(token=yylex()){
