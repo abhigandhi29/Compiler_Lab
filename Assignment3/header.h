@@ -1,3 +1,9 @@
+/*
+Assignment 3 - Lexer for tiny C
+19CS10031 - Abhishek Gandhi
+19CS10051 - Sajal Chammuniya 
+*/
+
 #ifndef _HEADER_H
     #define _HEADER_H 
 

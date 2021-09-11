@@ -3,9 +3,12 @@
 #include <math.h>
 
 /*
-Compilers Assignment 3
-Test_file
- ****/
+Assignment 3 - Lexer for tiny C Test File
+19CS10031 - Abhishek Gandhi
+19CS10051 - Sajal Chammuniya 
+*/
+
+// Single line comment
 
 auto 
 enum 
