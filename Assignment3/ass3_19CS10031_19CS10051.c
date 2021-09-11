@@ -6,7 +6,7 @@ extern char* yytext;
 
 int main(){
   int token;
-  while(token=yylex()){
+  while((token=yylex())){
 
     switch(token) {
         case COMMENT:    printf("<COMMENT, %d, %s>\n",token,yytext); break;
