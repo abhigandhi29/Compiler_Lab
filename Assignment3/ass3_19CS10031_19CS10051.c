@@ -1,7 +1,8 @@
 /*
-Assignment 3 - Lexer for tiny C
+Assignment 3 - Lexer for tiny C Test File
+Group 2
 19CS10031 - Abhishek Gandhi
-19CS10051 - Sajal Chammuniya 
+19CS10051 - Sajal Chammunya 
 */
 
 #include <stdio.h>
@@ -58,8 +59,10 @@ int main(){
 
         // identifiers
         case IDENTIFIER:     printf("< IDENTIFIER: %d, %s>\n",token,yytext); break;
-        case CONSTANT:       printf("< CONSTANT: %d, %s>\n",token,yytext); break;
-        // case FLOATING_CONSTANT:    printf("< FLOATING_CONSTANT, %d, %s>\n",token,yytext); break;
+        // case FLT_CONST:       printf("< CONSTANT: %d, %s>\n",token,yytext); break;
+        case FLT_CONST:    printf("< CONSTANT: FLOAT, %d, %s>\n",token,yytext); break;
+        case INT_CONST:    printf("< CONSTANT: INTEGER, %d, %s>\n",token,yytext); break;
+        case CHAR_CONST:    printf("< CONSTANT: CHARACTER, %d, %s>\n",token,yytext); break;
         // case STRING_LITERAL:    printf("< STRING, %d, %s>\n",token,yytext); break;
         case STRING_LITERAL:    printf("< STRING_LITERAL: %d, %s>\n",token,yytext); break;
 

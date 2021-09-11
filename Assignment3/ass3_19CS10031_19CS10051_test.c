@@ -4,8 +4,9 @@
 
 /*
 Assignment 3 - Lexer for tiny C Test File
+Group 2
 19CS10031 - Abhishek Gandhi
-19CS10051 - Sajal Chammuniya 
+19CS10051 - Sajal Chammunya 
 */
 
 // Single line comment
@@ -68,8 +69,7 @@ for(i=0;i<=10;i++){
 }
 i=j*k;
 
-[
-]
+[ ]
 ++
 /
 ?

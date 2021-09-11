@@ -1,7 +1,8 @@
 /*
-Assignment 3 - Lexer for tiny C
+Assignment 3 - Lexer for tiny C Test File
+Group 2
 19CS10031 - Abhishek Gandhi
-19CS10051 - Sajal Chammuniya 
+19CS10051 - Sajal Chammunya 
 */
 
 #ifndef _HEADER_H
@@ -94,7 +95,9 @@ Assignment 3 - Lexer for tiny C
 
     #define COMMENT         100
     #define IDENTIFIER      101
-    #define CONSTANT        102
-    #define STRING_LITERAL  103
+    #define FLT_CONST       102
+    #define INT_CONST       103
+    #define CHAR_CONST      104
+    #define STRING_LITERAL  105
 
 #endif

@@ -13,13 +13,12 @@ DOT                 "."
 DIGIT_SEQ           {DIGIT}+
 SIGN                [+-]
 EXP_PART            ([eE]{SIGN}?{DIGIT_SEQ})
-FLOAT_CONST         (({FRAC_CONST}{EXP_PART}?)|({DIGIT_SEQ}{EXP_PART}))
+FLT_CONST           (({FRAC_CONST}{EXP_PART}?)|({DIGIT_SEQ}{EXP_PART}))
 FRAC_CONST          (({DIGIT_SEQ}?{DOT}{DIGIT_SEQ})|({DIGIT_SEQ}{DOT}))
 ESC_SEQ             ([\\][\'\"\?\\abfnrtv])
 C_CHAR              ([^\'\\\n']|{ESC_SEQ})
 C_CHAR_SEQ          ({C_CHAR}+)
 CHAR_CONST          ([\']{C_CHAR_SEQ}[\'])
-CONST               ({INT_CONST}|{FLOAT_CONST}|{CHAR_CONST})
 
 S_CHAR              {C_CHAR}
 S_CHAR_SEQ          ({S_CHAR}+)
@@ -124,7 +123,9 @@ WHITESPACE          [ \n\t]
 "#"                 { return HASH; }
 
 {IDENTIFIER}        { return IDENTIFIER;}
-{CONST}             { return CONSTANT;}
+{FLT_CONST}             { return FLT_CONST;}
+{INT_CONST}             { return INT_CONST;}
+{CHAR_CONST}             { return CHAR_CONST;}
 {STR_LIT}           { return STRING_LITERAL;}
 {WHITESPACE}        {;}
 
