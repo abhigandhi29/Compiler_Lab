@@ -1,47 +1,49 @@
-//Sriyash Poddar
 
 #include "stdio.h"
 #include <math.h>
 
-/* 18CS30040
+/*
 Compilers Assignment 3
 Test_file
  ****/
 
-const
-continue
-default
-do
-double
-auto
-break
-case
-char
-register
-restrict
-return
-short
-signed
-sizeof
-static
-struct
-volatile
-while
-else
-enum
-extern
-switch
-typedef
-union
+auto 
+enum 
+restrict 
 unsigned
+break 
+extern 
+return 
 void
-float
-for
-goto
-if
-inline
-int
-long
+case 
+float 
+short 
+volatile
+char 
+for 
+signed 
+while
+const 
+goto 
+sizeof 
+Bool
+continue 
+if 
+static 
+Complex
+default 
+inline 
+struct 
+Imaginary
+do 
+int 
+switch
+double 
+long 
+typedef
+else 
+register 
+union
 
 int integer = 10000;
 float flt = 51.6;

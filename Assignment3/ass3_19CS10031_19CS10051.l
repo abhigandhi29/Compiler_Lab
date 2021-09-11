@@ -35,6 +35,8 @@ COMMENT             {MULTI_COMMENT}|{SINGLE_COMMENT}
 WHITESPACE          [ \n\t]
 
 %%
+{COMMENT}           { return COMMENT; }
+
 "auto"              { return AUTO; }
 "enum"              { return ENUM; }
 "restrict"          { return RESTRICT; }
@@ -121,10 +123,9 @@ WHITESPACE          [ \n\t]
 ","                 { return COMMA; }
 "#"                 { return HASH; }
 
-
-{COMMENT}           { return COMMENT; }
 {IDENTIFIER}        { return IDENTIFIER;}
 {CONST}             { return CONSTANT;}
 {STR_LIT}           { return STRING_LITERAL;}
 {WHITESPACE}        {;}
+
 %%

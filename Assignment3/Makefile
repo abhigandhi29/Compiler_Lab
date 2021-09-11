@@ -1,11 +1,14 @@
-lex.yy.c : ass3_19CS10031_19CS10051.l header.h
-			flex ass3_19CS10031_19CS10051.l > lex.yy.c
+output.txt: a.out ass3_19CS10031_19CS10051_test.c
+	./a.out < ass3_19CS10031_19CS10051_test.c > output.txt
 
-a.out : lex.yy.c ass3_19CS10031_19CS10051.c ass3_19CS10031_19CS10051_test.c
-			gcc ass3_19CS10031_19CS10051.c lex.yy.c -lfl
+a.out: lex.yy.c ass3_19CS10031_19CS10051.o 
+	gcc -Wall ass3_19CS10031_19CS10051.o -lfl
 
-clean :
-		rm -rf a.out lex.yy.c
+lex.yy.c: ass3_19CS10031_19CS10051.l
+	flex ass3_19CS10031_19CS10051.l
 
-run : a.out
-		./a.out
+assg3_16CS10053.o: ass3_19CS10031_19CS10051.c
+	gcc -c -Wall ass3_19CS10031_19CS10051.c 
+
+clean:
+	rm output.txt lex.yy.c a.out *.o

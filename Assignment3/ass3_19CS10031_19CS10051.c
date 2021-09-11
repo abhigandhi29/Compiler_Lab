@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "lex.yy.c"
+#include "header.h"
 extern char* yytext;
 
 int main(){
@@ -7,8 +8,7 @@ int main(){
   while(token=yylex()){
 
     switch(token) {
-        case SINGLE_LINE_COMM:    printf("< SINGLE_LINE_COMM, %d, %s>\n",token,yytext); break;
-        case MULTI_LINE_COMM:     printf("< MULTI_LINE_COMM, %d, %s>\n",token,yytext); break;
+        case COMMENT:    printf("<COMMENT, %d, %s>\n",token,yytext); break;
 
         //KeyWords
         case AUTO: printf("< KEYWORD: AUTO, %d, %s >\n",token,yytext); break;
@@ -30,15 +30,15 @@ int main(){
         case CONST: printf("< KEYWORD: CONST, %d, %s >\n",token,yytext); break;
         case GOTO: printf("< KEYWORD: GOTO, %d, %s >\n",token,yytext); break;
         case SIZEOF: printf("< KEYWORD: SIZEOF, %d, %s >\n",token,yytext); break;
-        case _BOOL: printf("< KEYWORD: BOOL, %d, %s >\n",token,yytext); break;
+        case _BOOL: printf("< KEYWORD: _BOOL, %d, %s >\n",token,yytext); break;
         case CONTINUE: printf("< KEYWORD: CONTINUE, %d, %s >\n",token,yytext); break;
         case IF: printf("< KEYWORD: IF, %d, %s >\n",token,yytext); break;
         case STATIC: printf("< KEYWORD: STATIC, %d, %s >\n",token,yytext); break;
-        case _COMPLEX: printf("< KEYWORD: COMPLEX, %d, %s >\n",token,yytext); break;
+        case _COMPLEX: printf("< KEYWORD: _COMPLEX, %d, %s >\n",token,yytext); break;
         case DEFAULT: printf("< KEYWORD: DEFAULT, %d, %s >\n",token,yytext); break;
-        case INLILE: printf("< KEYWORD: INLINE, %d, %s >\n",token,yytext); break;
+        case INLINE: printf("< KEYWORD: INLINE, %d, %s >\n",token,yytext); break;
         case STRUCT: printf("< KEYWORD: STRUCT, %d, %s >\n",token,yytext); break;
-        case _IMAGINARY: printf("< KEYWORD: IMAGINARY, %d, %s >\n",token,yytext); break;
+        case _IMAGINARY: printf("< KEYWORD: _IMAGINARY, %d, %s >\n",token,yytext); break;
         case DO: printf("< KEYWORD: DO, %d, %s >\n",token,yytext); break;
         case INT: printf("< KEYWORD: INT, %d, %s >\n",token,yytext); break;
         case SWITCH: printf("< KEYWORD: SWITCH, %d, %s >\n",token,yytext); break;
@@ -51,57 +51,61 @@ int main(){
 
         // identifiers
         case IDENTIFIER:     printf("< IDENTIFIER, %d, %s>\n",token,yytext); break;
-        case INTEGER_CONSTANT:       printf("< INTEGER_CONSTANT, %d, %s>\n",token,yytext); break;
-        case FLOATING_CONSTANT:    printf("< FLOATING_CONSTANT, %d, %s>\n",token,yytext); break;
-        case CHARACTER_CONSTANT:    printf("< CHARACTER_CONSTANT, %d, %s>\n",token,yytext); break;
+        case CONSTANT:       printf("< CONSTANT, %d, %s>\n",token,yytext); break;
+        // case FLOATING_CONSTANT:    printf("< FLOATING_CONSTANT, %d, %s>\n",token,yytext); break;
+        // case STRING_LITERAL:    printf("< STRING, %d, %s>\n",token,yytext); break;
         case STRING_LITERAL:    printf("< STRING_LITERAL, %d, %s>\n",token,yytext); break;
 
         //punctuators
-        case SQRBROPEN:      printf("< SQRBROPEN, %d, %s>\n",token,yytext); break;
-        case SQRBRCLOSE:     printf("< SQRBRCLOSE, %d, %s>\n",token,yytext); break;
-        case RORBROPEN:      printf("< RORBROPEN, %d, %s>\n",token,yytext); break;
-        case RORBRCLOSE:     printf("< RORBRCLOSE, %d, %s>\n",token,yytext); break; 
-        case CURBROPEN:     printf("< CURBROPEN, %d, %s>\n",token,yytext); break;
-        case CURBRCLOSE:    printf("< CURBRCLOSE, %d, %s>\n",token,yytext); break;
-        case DOT:    printf("< DOT, %d, %s>\n",token,yytext); break;
-        case ARWCOM:    printf("< ARWCOM, %d, %s>\n",token,yytext); break;
-        case INCRM:    printf("< INCRM, %d, %s>\n",token,yytext); break;
-        case DECRM:    printf("< DECRM, %d, %s>\n",token,yytext); break;
-        case AMPSND:    printf("< AMPSND, %d, %s>\n",token,yytext); break;
-        case MUL:    printf("< MUL, %d, %s>\n",token,yytext); break;
-        case ADD:    printf("< ADD, %d, %s>\n",token,yytext); break;
-        case SUB:    printf("< SUB, %d, %s>\n",token,yytext); break;
-        case NEG:    printf("< NEG, %d, %s>\n",token,yytext); break;
-        case EXCLAIM:    printf("< EXCLAIM, %d, %s>\n",token,yytext); break;
-        case DIV:    printf("< DIV, %d, %s>\n",token,yytext); break;
-        case MODULO:     printf("< MODULO, %d, %s>\n",token,yytext); break;
-        case SHL:    printf("< SHL, %d, %s>\n",token,yytext); break;
-        case SHR:    printf("< SHR, %d, %s>\n",token,yytext); break;
-        case LST:     printf("< LST, %d, %s>\n",token,yytext); break;
-        case GRT:     printf("< GRT, %d, %s>\n",token,yytext); break;
-        case LTE:    printf("< LTE, %d, %s>\n",token,yytext); break;
-        case GTE:    printf("< GTE, %d, %s>\n",token,yytext); break;
-        case EQL:     printf("< EQL, %d, %s>\n",token,yytext); break;
-        case NEQ:    printf("< NEQ, %d, %s>\n",token,yytext); break;
-        case AND:    printf("< AND, %d, %s>\n",token,yytext); break;
-        case OR:     printf("< OR, %d, %s>\n",token,yytext); break;
-        case QUESTION:       printf("< QUESTION, %d, %s>\n",token,yytext); break;
-        case COLON:      printf("< COLON, %d, %s>\n",token,yytext); break;
-        case SEMICOLON:      printf("< SEMICOLON, %d, %s>\n",token,yytext); break;
-        case DOTS:       printf("< DOTS, %d, %s>\n",token,yytext); break;
-        case ASSIGN:     printf("< ASSIGN, %d, %s>\n",token,yytext); break;
-        case STAREQ:     printf("< STAREQ, %d, %s>\n",token,yytext); break;
-        case DIVEQ:      printf("< DIVEQ, %d, %s>\n",token,yytext); break;
-        case MODEQ:      printf("< MODEQ, %d, %s>\n",token,yytext); break;
-        case PLUSEQ:     printf("< PLUSEQ, %d, %s>\n",token,yytext); break;
-        case MINUSEQ:    printf("< MINUSEQ, %d, %s>\n",token,yytext); break;
-        case SHLEQ:      printf("< SHLEQ, %d, %s>\n",token,yytext); break;
-        case SHREQ:      printf("< SHREQ, %d, %s>\n",token,yytext); break;
-        case BINANDEQ:       printf("< BINANDEQ, %d, %s>\n",token,yytext); break;
-        case BINXOREQ:       printf("< BINXOREQ, %d, %s>\n",token,yytext); break;
-        case BINOREQ:    printf("< BINOREQ, %d, %s>\n",token,yytext); break;
-        case COMMA:      printf("< COMMA, %d, %s>\n",token,yytext); break;
-        case HASH:       printf("< HASH, %d, %s>\n",token,yytext); break;
+        case TDOT: printf("< TRIPLE DOT, %d, %s >\n",token,yytext); break;
+        case EQUAL: printf("< EQUAL, %d, %s >\n",token,yytext); break;
+        case MODEQ: printf("< MODEQ, %d, %s >\n",token,yytext); break;
+        case ADDEQ: printf("< ADDEQ, %d, %s >\n",token,yytext); break;
+        case MULEQ: printf("< MULEQ, %d, %s >\n",token,yytext); break;
+        case DIVEQ: printf("< DIVEQ, %d, %s >\n",token,yytext); break;
+        case SUBEQ: printf("< SUBEQ, %d, %s >\n",token,yytext); break;
+        case SHLEQ: printf("< SHLEQ, %d, %s >\n",token,yytext); break;
+        case SHREQ: printf("< SHREQ, %d, %s >\n",token,yytext); break;
+        case SQROPEN: printf("< SQROPEN, %d, %s >\n",token,yytext); break;
+        case SQRCLOSE: printf("< SQRCLOSE, %d, %s >\n",token,yytext); break;
+        case CIROPEN: printf("< CIROPEN, %d, %s >\n",token,yytext); break;
+        case CIRCLOSE: printf("< CIRCLOSE, %d, %s >\n",token,yytext); break;
+        case CUROPEN: printf("< CUROPEN, %d, %s >\n",token,yytext); break;
+        case CURCLOSE: printf("< CURCLOSE, %d, %s >\n",token,yytext); break;
+        case DOT: printf("< DOT, %d, %s >\n",token,yytext); break;
+        case ARROW: printf("< ARROW, %d, %s >\n",token,yytext); break;
+        case INCRE: printf("< INCREMENT, %d, %s >\n",token,yytext); break;
+        case DECRE: printf("< DECREMENT, %d, %s >\n",token,yytext); break;
+        case AND: printf("< AND, %d, %s >\n",token,yytext); break;
+        case MUL: printf("< MULTIPLY, %d, %s >\n",token,yytext); break;
+        case ADD: printf("< ADD, %d, %s >\n",token,yytext); break;
+        case SUB: printf("< SUBTRACT, %d, %s >\n",token,yytext); break;
+        case NEQ: printf("< NOT EQUAL, %d, %s >\n",token,yytext); break;
+        case EXCL: printf("< EXCLAMATION, %d, %s >\n",token,yytext); break;
+        case DIV: printf("< DIVISION, %d, %s >\n",token,yytext); break;
+        case MOD: printf("< MOD, %d, %s >\n",token,yytext); break;
+        case LESH: printf("< LESH, %d, %s >\n",token,yytext); break;
+        case RISH: printf("< RISH, %d, %s >\n",token,yytext); break;
+        case LST: printf("< LST, %d, %s >\n",token,yytext); break;
+        case GRT: printf("< GRT, %d, %s >\n",token,yytext); break;
+        case LSE: printf("< LSE, %d, %s >\n",token,yytext); break;
+        case GRE: printf("< GRE, %d, %s >\n",token,yytext); break;
+        case EQUATE: printf("< EQUATE, %d, %s >\n",token,yytext); break;
+        case NEQE: printf("< NEQE, %d, %s >\n",token,yytext); break;
+        case XOR: printf("< XOR, %d, %s >\n",token,yytext); break;
+        case OR: printf("< OR, %d, %s >\n",token,yytext); break;
+        case ANDNUM: printf("< ANDNUM, %d, %s >\n",token,yytext); break;
+        case ORNUM: printf("< ORNUM, %d, %s >\n",token,yytext); break;
+        case QUESTION: printf("< QUESTION, %d, %s >\n",token,yytext); break;
+        case COLON: printf("< COLON, %d, %s >\n",token,yytext); break;
+        case LINEEND: printf("< LINEEND, %d, %s >\n",token,yytext); break;
+        case ANDE: printf("< ANDE, %d, %s >\n",token,yytext); break;
+        case XORE: printf("< XORE, %d, %s >\n",token,yytext); break;
+        case ORE: printf("< ORE, %d, %s >\n",token,yytext); break;
+        case COMMA: printf("< COMMA, %d, %s >\n",token,yytext); break;
+        case HASH: printf("< HASH, %d, %s >\n",token,yytext); break;
+
+        default: printf("Have to allot this keyword: %d, %s\n",token,yytext);break;
     }
   }
     return 0;
