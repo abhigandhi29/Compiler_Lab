@@ -1,3 +1,9 @@
+
+# Assignment 4 - Parser for tiny C Test File
+# Group 2
+# 19CS10031 - Abhishek Gandhi
+# 19CS10051 - Sajal Chhamunya 
+
 test: a.out
 	./a.out < ass4_19CS10031_19CS10051_test.c > output.txt
 

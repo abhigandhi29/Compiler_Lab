@@ -1,8 +1,8 @@
 /*
-
-Name : Vedic Partap
-Roll No. : 16CS10053
-
+Assignment 4 - Parser for tiny C Test File
+Group 2
+19CS10031 - Abhishek Gandhi
+19CS10051 - Sajal Chhamunya 
 */
 static my = 0;
 register name = 9;
@@ -36,7 +36,7 @@ int main()
   a = b+45;
 
   for (c = 0; c <= n - 1; c++) {
-    vedic==partap;
+    sajal==gandhi;
   }
 
 	a++;
