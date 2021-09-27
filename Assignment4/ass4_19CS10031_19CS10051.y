@@ -200,9 +200,9 @@ multiplicative_expression: cast_expression
     { printf("multiplicative_expression -> cast_expression\n"); }
     | multiplicative_expression MUL cast_expression
     { printf("multiplicative_expression -> multiplicative_expression * cast_expression\n"); }
-    | multiplicative_expression '/' cast_expression
+    | multiplicative_expression DIV cast_expression
     { printf("multiplicative_expression -> multiplicative_expression / cast_expression\n"); }
-    | multiplicative_expression '%' cast_expression
+    | multiplicative_expression MOD cast_expression
     { printf("multiplicative_expression -> multiplicative_expression %% cast_expression\n"); }
     ;
 
@@ -652,8 +652,6 @@ translation_unit: external_declaration
     { printf("translation_unit -> external_declaration\n"); }
     | translation_unit external_declaration
     { printf("translation_unit -> translation_unit external_declaration\n"); }
-    | COMMENT
-    { printf("Comment\n"); }
     ;
 
 external_declaration: function_definition
@@ -667,9 +665,9 @@ function_definition: declaration_specifiers declarator declaration_list_opt comp
     ;
 
 declaration_list_opt: declaration_list
-    { printf("declaration_list_opt -> declaration_list"); }
+    { printf("declaration_list_opt -> declaration_list\n"); }
     | %empty
-    { printf("declaration_list_opt -> epsilon"); }
+    { printf("declaration_list_opt -> epsilon\n"); }
     ;
 
 declaration_list: declaration

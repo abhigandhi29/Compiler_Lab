@@ -35,7 +35,7 @@ COMMENT             {MULTI_COMMENT}|{SINGLE_COMMENT}
 WHITESPACE          [ \n\t]
 
 %%
-{COMMENT}           { return COMMENT; }
+{COMMENT}           { }
 
 "auto"              { return AUTO; }
 "enum"              { return ENUM; }

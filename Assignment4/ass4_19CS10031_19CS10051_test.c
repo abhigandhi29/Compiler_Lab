@@ -17,6 +17,7 @@ int main()
   int n, array[1000], c, d, t;
  
   for (c = 0; c < n; c++) {
+    // a &=34;
   }
  
   for (c = 1 ; c <= n - 1; c++) {
