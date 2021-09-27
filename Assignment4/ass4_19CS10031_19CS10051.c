@@ -8,9 +8,12 @@ Group 2
 #include "y.tab.h"
 #include "stdio.h"
 
-void main() {
-    if(yyparse())
-    print("\n\nSUCCESS\n");
+int main() {
+    int val = yyparse();
+    //printf("%d\n", val);
+    if(!val)
+        printf("\n\nSUCCESS\n");
     else
-    print("\n\nError\n");
+        printf("\n\nError\n");
+    return 0;
 }

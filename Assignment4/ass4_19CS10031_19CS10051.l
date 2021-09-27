@@ -41,7 +41,7 @@ COMMENT             {MULTI_COMMENT}|{SINGLE_COMMENT}
 WHITESPACE          [ \n\t]
 
 %%
-{COMMENT}           { }
+{COMMENT}           { printf("Comment\n");}
 
 "auto"              { return AUTO; }
 "enum"              { return ENUM; }
