@@ -126,33 +126,33 @@ primary_expression: IDENTIFIER
     { printf("primary_expression -> constant\n"); }
     | STRING_LITERAL
     { printf("primary_expression -> STRING_LITERAL\n"); }
-    | '(' expression ')'
+    | CIROPEN expression CIRCLOSE
     { printf("primary_expression -> (expression)\n"); }
     ;
 
 postfix_expression: primary_expression
     { printf("postfix_expression -> primary_expression\n"); }
-    | postfix_expression '[' expression ']'
+    | postfix_expression SQROPEN expression SQRCLOSE
     { printf("postfix_expression -> postfix_expression[expression]\n"); }
-    | postfix_expression '(' argument_expression_list_opt ')'
+    | postfix_expression CIROPEN argument_expression_list_opt CIRCLOSE
     { printf("postfix_expression -> postfix_expression(argument_expression_list_opt)\n"); }
-    | postfix_expression '.' IDENTIFIER
+    | postfix_expression DOT IDENTIFIER
     { printf("postfix_expression -> postfix-expression . IDENTIFIER\n"); }
     | postfix_expression ARROW IDENTIFIER
     { printf("postfix_expression -> postfix-expression -> IDENTIFIER\n"); }
-    | postfix_expression INCREMENT
+    | postfix_expression INCRE
     { printf("postfix_expression -> postfix-expression ++\n"); }
-    | postfix_expression DECREMENT
+    | postfix_expression DECRE
     { printf("postfix_expression -> postfix-expression --\n"); }
-    | '(' type_name ')' '{' initializer_list '}'
+    | CIROPEN type_name CIRCLOSE CUROPEN initializer_list CURCLOSE
     { printf("postfix_expression -> (type_name){initializer_list}\n"); }
-    | '(' type_name ')' '{' initializer_list ',' '}'
+    | CIROPEN type_name CIRCLOSE CUROPEN initializer_list COMMA CURCLOSE
     { printf("postfix_expression -> (type_name){initializer_list,}\n"); }
     ;
 
 argument_expression_list: assignment_expression
     { printf("argument_expression_list -> assignment_expression\n"); }
-    | argument_expression_list ',' assignment_expression
+    | argument_expression_list COMMA assignment_expression
     { printf("argument_expression_list -> argument_expression_list,assignment_expression\n"); }
     ;
 
@@ -164,41 +164,41 @@ argument_expression_list_opt: argument_expression_list
 
 unary_expression: postfix_expression
     { printf("unary_expression -> postfix_expression\n"); }
-    | INCREMENT unary_expression
-    { printf("unary_expression -> INCREMENT unary_expression\n"); }
-    | DECREMENT unary_expression
-    { printf("unary_expression -> DECREMENT unary_expression\n"); }
+    | INCRE unary_expression
+    { printf("unary_expression -> INCRE unary_expression\n"); }
+    | DECRE unary_expression
+    { printf("unary_expression -> DECRE unary_expression\n"); }
     | unary_operator cast_expression
     { printf("unary_expression -> unary_operator cast_expression\n"); }
     | SIZEOF unary_expression
     { printf("unary_expression -> SIZEOF unary_expression\n"); }
-    | SIZEOF '(' type_name ')'
+    | SIZEOF CIROPEN type_name CIRCLOSE
     { printf("unary_expression -> SIZEOF (type_name)\n"); }
     ;
 
-unary_operator: '&'
+unary_operator: AND
     { printf("unary_operator -> &\n"); }
-    | '*'
+    | MUL
     { printf("unary_operator -> *\n"); }
-    | '+'
+    | ADD
     { printf("unary_operator -> +\n"); }
-    | '-'
+    | SUB
     { printf("unary_operator -> -\n"); }
-    | '~'
+    | NEQ
     { printf("unary_operator -> ~\n"); }
-    | '!'
+    | EXCL
     { printf("unary_operator -> !\n"); }
     ;
 
 cast_expression: unary_expression
     { printf("cast_expression -> unary_expression\n"); }
-    | '(' type_name ')' cast_expression
+    | CIROPEN type_name CIRCLOSE cast_expression
     { printf("cast_expression -> (type_name)cast_expression\n"); }
     ;
 
 multiplicative_expression: cast_expression
     { printf("multiplicative_expression -> cast_expression\n"); }
-    | multiplicative_expression '*' cast_expression
+    | multiplicative_expression MUL cast_expression
     { printf("multiplicative_expression -> multiplicative_expression * cast_expression\n"); }
     | multiplicative_expression '/' cast_expression
     { printf("multiplicative_expression -> multiplicative_expression / cast_expression\n"); }
@@ -208,73 +208,73 @@ multiplicative_expression: cast_expression
 
 additive_expression: multiplicative_expression
     { printf("additive_expression -> multiplicative_expression\n"); }
-    | additive_expression '+' multiplicative_expression
+    | additive_expression ADD multiplicative_expression
     { printf("additive_expression -> additive_expression + multiplicative_expression\n"); }
-    | additive_expression '-' multiplicative_expression
+    | additive_expression SUB multiplicative_expression
     { printf("additive_expression -> additive_expression - multiplicative_expression\n"); }
     ;
 
 shift_expression: additive_expression
     { printf("shift_expression -> additive_expression\n"); }
-    | shift_expression LEFT_SHIFT additive_expression
+    | shift_expression LESH additive_expression
     { printf("shift_expression -> shift_expression << additive_expression\n"); }
-    | shift_expression RIGHT_SHIFT additive_expression
+    | shift_expression RISH additive_expression
     { printf("shift_expression -> shift_expression >> additive_expression\n"); }
     ;
 
 relational_expression: shift_expression
     { printf("relational_expression -> shift_expression\n"); }
-    | relational_expression '<' shift_expression
+    | relational_expression LST shift_expression
     { printf("relational_expression -> relational_expression < shift_expression\n"); }
-    | relational_expression '>' shift_expression
+    | relational_expression GRT shift_expression
     { printf("relational_expression -> relational_expression > shift_expression\n"); }
-    | relational_expression LEQ shift_expression
+    | relational_expression LSE shift_expression
     { printf("relational_expression -> relational_expression <= shift_expression\n"); }
-    | relational_expression GEQ shift_expression
+    | relational_expression GRE shift_expression
     { printf("relational_expression -> relational_expression >= shift_expression\n"); }
     ;
 
 equality_expression: relational_expression
     { printf("equality_expression -> relational_expression\n"); }
-    | equality_expression IS_EQUAL relational_expression
+    | equality_expression EQUATE relational_expression
     { printf("equality_expression -> equality_expression == relational_expression\n"); }
-    | equality_expression NOT_EQUAL relational_expression
+    | equality_expression NEQE relational_expression
     { printf("equality_expression -> equality_expression != relational_expression\n"); }
     ;
 
 and_expression: equality_expression
     { printf("and_expression -> equality_expression\n"); }
-    | and_expression '&' equality_expression
+    | and_expression AND equality_expression
     { printf("and_expression -> and_expression & equality_expression\n"); }
     ;
 
 exclusive_or_expression: and_expression
     { printf("exclusive_or_expression -> and_expression\n"); }
-    | exclusive_or_expression '^' and_expression
+    | exclusive_or_expression XOR and_expression
     { printf("exclusive_or_expression -> exclusive_or_expression ^ and_expression\n"); }
     ;
 
 inclusive_or_expression: exclusive_or_expression
     { printf("inclusive_or_expression -> exclusive_or_expression\n"); }
-    | inclusive_or_expression '|' exclusive_or_expression
+    | inclusive_or_expression OR exclusive_or_expression
     { printf("inclusive_or_expression -> inclusive_or_expression | exclusive_or_expression\n"); }
     ;
 
 logical_and_expression: inclusive_or_expression
     { printf("logical_and_expression -> inclusive_or_expression\n"); }
-    | logical_and_expression AND inclusive_or_expression
+    | logical_and_expression ANDNUM inclusive_or_expression
     { printf("logical_and_expression -> logical_and_expression && inclusive_or_expression\n"); }
     ;
 
 logical_or_expression: logical_and_expression
     { printf("logical_or_expression -> logical_and_expression\n"); }
-    | logical_or_expression OR logical_and_expression
+    | logical_or_expression ORNUM logical_and_expression
     { printf("logical_or_expression -> logical_or_expression || logical_and_expression\n"); }
     ;
 
 conditional_expression: logical_or_expression
     { printf("conditional_expression -> logical_or_expression\n"); }
-    | logical_or_expression '?' expression ':' conditional_expression
+    | logical_or_expression QUESTION expression COLON conditional_expression
     { printf("conditional_expression -> logical_or_expression ? expression : conditional_expression\n"); }
     ;
 
@@ -284,33 +284,33 @@ assignment_expression: conditional_expression
     { printf("assignment_expression -> unary_expression assignment_operator assignment_expression\n"); }
     ;
 
-assignment_operator: '='
+assignment_operator: EQUAL
     { printf("assignment_operator -> =\n"); }
-    | MULTIPLY_EQUAL
+    | MULEQ
     { printf("assignment_operator -> *=\n"); }
-    | DIVIDE_EQUAL
+    | DIVEQ
     { printf("assignment_operator -> /=\n"); }
-    | MOD_EQUAL
+    | MODEQ
     { printf("assignment_operator -> %%=\n"); }
-    | PLUS_EQUAL
+    | ADDEQ
     { printf("assignment_operator -> +=\n"); }
-    | MINUS_EQUAL
+    | SUBEQ
     { printf("assignment_operator -> -=\n"); }
-    | LEFT_SHIFT_EQUAL
+    | SHLEQ
     { printf("assignment_operator -> <<=\n"); }
-    | RIGHT_SHIFT_EQUAL
+    | SHREQ
     { printf("assignment_operator -> >>=\n"); }
-    | AND_EQUAL
+    | ANDE
     { printf("assignment_operator -> &&=\n"); }
-    | XOR_EQUAL
+    | XORE
     { printf("assignment_operator -> ^=\n"); }
-    | OR_EQUAL
+    | ORE
     { printf("assignment_operator -> |=\n"); }
     ;
 
 expression: assignment_expression
     { printf("expression -> assignment_expression\n"); }
-    | expression ',' assignment_expression
+    | expression COMMA assignment_expression
     { printf("expression -> expression , assignment_expression\n"); }
     ;
 
@@ -318,7 +318,7 @@ constant_expression: conditional_expression
     { printf("constant_expression -> conditional_expression\n"); }
     ;
 
-declaration: declaration_specifiers init_declarator_list_opt ";"
+declaration: declaration_specifiers init_declarator_list_opt LINEEND
     { printf("declaration -> declaration_specifiers init_declarator_list_opt ;\n"); }
     ;
 
@@ -346,13 +346,13 @@ declaration_specifiers_opt: declaration_specifiers
 
 init_declarator_list: init_declarator
     { printf("init_declarator_list -> init_declarator\n"); }
-    | init_declarator_list ',' init_declarator
+    | init_declarator_list COMMA init_declarator
     { printf("init_declarator_list -> init_declarator_list , init_declarator\n"); }
     ;
 
 init_declarator: declarator
     { printf("init_declarator -> declarator\n"); }
-    | declarator '=' initializer
+    | declarator EQUAL initializer
     { printf("init_declarator -> declarator = initializer\n"); }
     ;
 
@@ -360,6 +360,10 @@ storage_class_specifier: EXTERN
     { printf("storage_class_specifier -> extern\n"); }
     | STATIC
     { printf("storage_class_specifier -> static\n"); }
+    | AUTO
+    { printf("storage_class_specifier -> auto\n"); }
+    | REGISTER
+    { printf("storage_class_specifier -> register\n"); }
     ;
 
 type_specifier: VOID
@@ -376,6 +380,18 @@ type_specifier: VOID
     { printf("type_specifier -> FLOAT\n"); }
     | DOUBLE
     { printf("type_specifier -> DOUBLE\n"); }
+    | SIGNED
+    { printf("type_specifier -> SIGNED\n"); }
+    | UNSIGNED
+    { printf("type_specifier -> UNSIGNED\n"); }
+    | _BOOL
+    { printf("type_specifier -> _BOOL\n"); }
+    | _COMPLEX
+    { printf("type_specifier -> _COMPLEX\n"); }
+    | _IMAGINARY
+    { printf("type_specifier -> _IMAGINARY\n"); }
+    | enum_specifier
+    { printf("type_specifier -> ENUM_SPECIFIER\n"); }
     ;
 
 specific_qualifier_list: type_specifier specific_qualifier_list_opt
@@ -388,6 +404,32 @@ specific_qualifier_list_opt: specific_qualifier_list
     { printf("specific_qualifier_list_opt -> specific_qualifier_list\n"); }
     | %empty
     { printf("specific_qualifier_list_opt -> epsilon\n"); }
+    ;
+
+enum_specifier: ENUM identifier_opt CUROPEN enum_list CURCLOSE
+    { printf("enum_specifier -> enum identifier_opt { enumerator-list }\n"); }
+    | ENUM identifier_opt CUROPEN enum_list COMMA CURCLOSE
+    { printf("enum_specifier -> enum identifier_opt { enumerator-list , }\n"); }
+    | ENUM IDENTIFIER
+    { printf("enum_specifier -> enum identifier\n"); }
+    ;
+
+identifier_opt: IDENTIFIER
+    { printf("identifier_opt -> identifier\n"); }
+    | %empty
+    { printf("identifier_opt -> epsilon\n"); }
+    ;
+
+enum_list: enumerator
+    { printf("enumerator-list -> enumerator\n"); }
+    | enum_list COMMA enumerator
+    { printf("enumerator-list -> enumerator_list , enumerator\n"); }
+    ;
+
+enumerator: IDENTIFIER
+    { printf("enumerator -> enumeration_constant\n"); }
+    | IDENTIFIER EQUAL constant
+    { printf("enumerator -> enumeration_constant = constant-expression\n"); }
     ;
 
 type_qualifier: CONST
@@ -408,19 +450,19 @@ declarator: pointer_opt direct_declarator
 
 direct_declarator: IDENTIFIER
     { printf("direct_declarator -> IDENTIFIER\n"); }
-    | '(' declarator ')'
+    | CIROPEN declarator CIRCLOSE
     { printf("direct_declarator -> ( declarator )\n"); }
-    | direct_declarator '[' type_qualifier_list_opt assignment_expression_opt ']'
+    | direct_declarator SQROPEN type_qualifier_list_opt assignment_expression_opt SQRCLOSE
     { printf("direct_declarator -> direct_declarator [ type_qualifier_list_opt assignment_expression_opt ]\n"); }
-    | direct_declarator '[' STATIC type_qualifier_list_opt assignment_expression ']'
+    | direct_declarator SQROPEN STATIC type_qualifier_list_opt assignment_expression SQRCLOSE
     { printf("direct_declarator -> direct_declarator [ STATIC type_qualifier_list_opt assignment_expression ]\n"); }
-    | direct_declarator '[' type_qualifier_list STATIC assignment_expression ']'
+    | direct_declarator SQROPEN type_qualifier_list STATIC assignment_expression SQRCLOSE
     { printf("direct_declarator -> direct_declarator [ type_qualifier_list STATIC assignment_expression ]\n"); }
-    | direct_declarator '[' type_qualifier_list_opt '*' ']'
+    | direct_declarator SQROPEN type_qualifier_list_opt MUL SQRCLOSE
     { printf("direct_declarator -> direct_declarator [ type_qualifier_list_opt * ]\n"); }
-    | direct_declarator '(' parameter_type_list ')'
+    | direct_declarator CIROPEN parameter_type_list CIRCLOSE
     { printf("direct_declarator -> direct_declarator ( parameter_type_list )\n"); }
-    | direct_declarator '(' identifier_list_opt ')'
+    | direct_declarator CIROPEN identifier_list_opt CIRCLOSE
     { printf("direct_declarator -> direct_declarator ( identifier_list_opt )\n"); }
     ;
 
@@ -448,9 +490,9 @@ pointer_opt: pointer
     { printf("pointer_opt -> epsilon\n"); }
     ;
 
-pointer: '*' type_qualifier_list_opt
+pointer: MUL type_qualifier_list_opt
     { printf("pointer -> * type_qualifier_list_opt\n"); }
-    | '*' type_qualifier_list_opt pointer
+    | MUL type_qualifier_list_opt pointer
     { printf("pointer -> * type_qualifier_list_opt pointer\n"); }
     ;
 
@@ -462,13 +504,13 @@ type_qualifier_list: type_qualifier
 
 parameter_type_list: parameter_list
     { printf("parameter_type_list -> parameter_list\n"); }
-    | parameter_list ',' TRIPLE_DOT
+    | parameter_list COMMA TDOT
     { printf("parameter_type_list -> parameter_list , ...\n"); }
     ;
 
 parameter_list: parameter_declaration
     { printf("parameter_list -> parameter_declaration\n"); }
-    | parameter_list ',' parameter_declaration
+    | parameter_list COMMA parameter_declaration
     { printf("parameter_list -> parameter_list , parameter_declaration\n"); }
     ;
 
@@ -480,7 +522,7 @@ parameter_declaration: declaration_specifiers declarator
 
 identifier_list: IDENTIFIER
     { printf("identifier_list -> IDENTIFIER\n"); }
-    | identifier_list ',' IDENTIFIER
+    | identifier_list COMMA IDENTIFIER
     { printf("identifier_list -> identifier_list , IDENTIFIER\n"); }
     ;
 
@@ -490,15 +532,15 @@ type_name: specific_qualifier_list
 
 initializer: assignment_expression
     { printf("initializer -> assignment_expression\n"); }
-    | '{' initializer_list '}'
+    | CUROPEN initializer_list CURCLOSE
     { printf("initializer -> { initializer_list }\n"); }
-    | '{' initializer_list ',' '}'
+    | CUROPEN initializer_list COMMA CURCLOSE
     { printf("initializer -> { initializer_list , }\n"); }
     ;
 
 initializer_list: designation_opt initializer
     { printf("initializer_list -> designation_opt initializer\n"); }
-    | initializer_list ',' designation_opt initializer
+    | initializer_list COMMA designation_opt initializer
     { printf("initializer_list -> initializer_list , designation_opt initializer\n"); }
     ;
 
@@ -508,7 +550,7 @@ designation_opt: designation
     { printf("designation_opt -> epsilon\n"); }
     ;
 
-designation: designator_list '='
+designation: designator_list EQUAL
     { printf("designation -> designator_list =\n"); }
     ;
 
@@ -518,9 +560,9 @@ designator_list: designator
     { printf("designator_list -> designator_list designator\n"); }
     ;
 
-designator: '[' constant_expression ']'
+designator: SQROPEN constant_expression SQRCLOSE
     { printf("designator -> [ constant_expression ]\n"); }
-    | '.' IDENTIFIER
+    | DOT IDENTIFIER
     { printf("designator -> . IDENTIFIER\n"); }
     ;
 
@@ -538,15 +580,15 @@ statement: labeled_statement
     { printf("statement -> jump_statement\n"); }
     ;
 
-labeled_statement: IDENTIFIER ':' statement
+labeled_statement: IDENTIFIER COLON statement
     { printf("labeled_statement -> IDENTIFIER : statement\n"); }
-    | CASE constant_expression ':' statement
+    | CASE constant_expression COLON statement
     { printf("labeled_statement -> CASE constant_expression : statement\n"); }
-    | DEFAULT ':' statement
+    | DEFAULT COLON statement
     { printf("labeled_statement -> DEFAULT : statement\n"); }
     ;
 
-compound_statement: '{' block_item_list_opt '}'
+compound_statement: CUROPEN block_item_list_opt CURCLOSE
     { printf("compound_statement -> { block_item_list_opt }\n"); }
     ;
 
@@ -568,7 +610,7 @@ block_item: declaration
     { printf("block_item -> statement\n"); }
     ;
 
-expression_statement: expression_opt ';'
+expression_statement: expression_opt LINEEND
     { printf("expression_statement -> expression_opt;\n"); }
     ;
 
@@ -578,31 +620,31 @@ expression_opt: expression
     { printf("expression_opt -> epsilon\n"); }
     ;
 
-selection_statement: IF '(' expression ')' statement %prec THEN
+selection_statement: IF CIROPEN expression CIRCLOSE statement
     { printf("selection_statement -> IF ( expression ) statement\n"); }
-    | IF '(' expression ')' statement ELSE statement
+    | IF CIROPEN expression CIRCLOSE statement ELSE statement
     { printf("selection_statement -> IF ( expression ) statement ELSE statement\n"); }
-    | SWITCH '(' expression ')' statement
+    | SWITCH CIROPEN expression CIRCLOSE statement
     { printf("selection_statement -> SWITCH ( expression ) statement\n"); }
     ;
 
-iteration_statement: WHILE '(' expression ')' statement
+iteration_statement: WHILE CIROPEN expression CIRCLOSE statement
     { printf("iteration_statement -> WHILE ( expression ) statement\n"); }
-    | DO statement WHILE '(' expression ')' ';'
+    | DO statement WHILE CIROPEN expression CIRCLOSE LINEEND
     { printf("iteration_statement -> DO statement WHILE ( expression ) ;\n"); }
-    | FOR '(' expression_opt ';' expression_opt ';' expression_opt ')' statement
+    | FOR CIROPEN expression_opt LINEEND expression_opt LINEEND expression_opt CIRCLOSE statement
     { printf("iteration_statement -> FOR ( expression_opt ; expression_opt ; expression_opt ) statement\n"); }
-    | FOR '(' declaration expression_opt ';' expression_opt ')' statement
+    | FOR CIROPEN declaration expression_opt LINEEND expression_opt CIRCLOSE statement
     { printf("iteration_statement -> FOR ( declaration expression_opt ; expression_opt ) statement\n"); }
     ;
 
-jump_statement: GOTO IDENTIFIER ';'
+jump_statement: GOTO IDENTIFIER LINEEND
     { printf("jump_statement -> GOTO IDENTIFIER ;\n"); }
-    | CONTINUE ';'
+    | CONTINUE LINEEND
     { printf("jump_statement -> CONTINUE ;\n"); }
-    | BREAK ';'
+    | BREAK LINEEND
     { printf("jump_statement -> BREAK ;\n"); }
-    | RETURN expression_opt ';'
+    | RETURN expression_opt LINEEND
     { printf("jump_statement -> RETURN expression_opt ;\n"); }
     ;
 
@@ -610,6 +652,8 @@ translation_unit: external_declaration
     { printf("translation_unit -> external_declaration\n"); }
     | translation_unit external_declaration
     { printf("translation_unit -> translation_unit external_declaration\n"); }
+    | COMMENT
+    { printf("Comment\n"); }
     ;
 
 external_declaration: function_definition
