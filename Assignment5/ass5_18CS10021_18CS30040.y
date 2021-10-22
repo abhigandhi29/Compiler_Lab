@@ -16,10 +16,12 @@
 
 %union {
 	char unaryOp;	//unaryoperator		
-	char *char_value;	//char value
+	int inval;
+    float floatval;
+    char charval;
+    char *stringval;
 
-	int instr_number;		//instruction number: for backpatching
-	int intval;		//integer value	
+	int instr_number;		//instruction number: for backpatching	
 	int num_params;			//number of parameters
 	Expression *expr;		//expression
 	Statement *stat;		//statement		
@@ -30,26 +32,108 @@
 
 %token BREAK CASE CHAR CONST CONTINUE DEFAULT DO DOUBLE ELSE EXTERN FLOAT FOR GOTO IF INLINE INT LONG REGISTER RESTRICT RETURN SHORT SIGNED SIZEOF STATIC STRUCT SWITCH TYPEDEF UNION VOID VOLATILE WHILE 
 %token <symp> IDENTIFIER 		 		
-%token <intval> INTEGER_CONSTANT			
-%token <char_value> FLOATING_CONSTANT
-%token <char_value> CHARACTER_CONSTANT				
-%token <char_value> STRING_LITERAL 		
-%token SQUARE_BRACKET_OPEN SQUARE_BRACKET_CLOSE ROUND_BRACKET_OPEN ROUND_BRACKET_CLOSE CURLY_BRACKET_OPEN CURLY_BRACKET_CLOSE
-%token DOT IMPLIES INC DEC BITWISE_AND MUL ADD SUB BITWISE_NOT EXCLAIM DIV MOD SHIFT_LEFT SHIFT_RIGHT BIT_SL BIT_SR 
-%token LTE GTE EQ NEQ BITWISE_XOR BITWISE_OR AND OR QUESTION COLON SEMICOLON DOTS ASSIGN 
-%token STAR_EQ DIV_EQ MOD_EQ ADD_EQ SUB_EQ SL_EQ SR_EQ BITWISE_AND_EQ BITWISE_XOR_EQ BITWISE_OR_EQ 
-%token COMMA HASH 
+%token <floatval> FLOAT_CONSTANT
+%token <charval> CHAR_CONSTANT
+%token <stringval> STRING_LITERAL
+%token <intval> INTEGER_CONSTANT
+
+%token COMMENT
+%token AUTO
+%token ENUM
+%token RESTRICT
+%token UNSIGNED
+%token BREAK
+%token EXTERN
+%token RETURN
+%token VOID
+%token CASE
+%token FLOAT
+%token SHORT
+%token VOLATILE
+%token CHAR
+%token FOR
+%token SIGNED
+%token WHILE
+%token CONST
+%token GOTO
+%token SIZEOF
+%token _BOOL
+%token CONTINUE
+%token IF
+%token STATIC
+%token _COMPLEX
+%token DEFAULT
+%token INLINE
+%token STRUCT
+%token _IMAGINARY
+%token DO
+%token INT
+%token SWITCH
+%token DOUBLE
+%token LONG
+%token TYPEDEF
+%token ELSE
+%token REGISTER
+%token UNION
+%token TDOT
+%token EQUAL
+%token MODEQ
+%token ADDEQ
+%token MULEQ
+%token DIVEQ
+%token SUBEQ
+%token SHLEQ
+%token SHREQ
+%token SQROPEN
+%token SQRCLOSE
+%token CIROPEN
+%token CIRCLOSE
+%token CUROPEN
+%token CURCLOSE
+%token DOT
+%token ARROW
+%token INCRE
+%token DECRE
+%token AND
+%token MUL
+%token ADD
+%token SUB
+%token NEQ
+%token EXCL
+%token DIV
+%token MOD
+%token LESH
+%token RISH
+%token LST
+%token GRT
+%token LSE
+%token GRE
+%token EQUATE
+%token NEQE
+%token XOR
+%token OR
+%token ANDNUM
+%token ORNUM
+%token QUESTION
+%token COLON
+%token LINEEND
+%token ANDE
+%token XORE
+%token ORE
+%token COMMA
+%token HASH
+%token IDENTIFIER
+
 %start translation_unit
 
-//to remove dangling else problem
-%right "then" ELSE
+%nonassoc THEN
+%nonassoc ELSE
 
 //unary operator
 %type <unaryOp> unary_operator
 
 //number of parameters
 %type <num_params> argument_expression_list argument_expression_list_opt
-
 
 
 //Expressions
@@ -121,8 +205,7 @@ N
 	}
 	;
 
-constant
-	: INTEGER_CONSTANT 
+constant: INTEGER_CONSTANT 
 	{
 		$$ =  new Expression();	
 		string p=convertIntToString($1);
