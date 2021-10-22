@@ -186,8 +186,7 @@
 
 %%
 
-M
-	: %empty 
+M: %empty 
 	{
 		// backpatching,stores the index of the next quad to be generated
 		// Used in various control statements
@@ -195,8 +194,7 @@ M
 	}   
 	;
 
-N
-	: %empty
+N: %empty
 	{
 		// backpatching,inserts a goto and stores the index of the next goto statement to guard against fallthrough
 		$$ =new Statement();            //N->nextlist=makelist(nextinstr) we have defined nextlist for Statements
@@ -212,13 +210,13 @@ constant: INTEGER_CONSTANT
 		$$->loc=gentemp(new symboltype("int"),p);
 		emit("=",$$->loc->name,p);
 	}
-	| FLOATING_CONSTANT 
+	| FLOAT_CONSTANT
 	{
 		$$=new Expression();
 		$$->loc=gentemp(new symboltype("float"),$1);
 		emit("=",$$->loc->name,string($1));
 	}
-	| CHARACTER_CONSTANT
+	| CHAR_CONSTANT
 	{
 		$$=new Expression();
 		$$->loc=gentemp(new symboltype("char"),$1);
@@ -228,8 +226,7 @@ constant: INTEGER_CONSTANT
 
 
 
-primary_expression
-	: IDENTIFIER
+primary_expression: IDENTIFIER
 	{	
 		$$=new Expression();                      //create new expression and store pointer to ST entry in the location					 
 		$$->loc=$1;
@@ -245,30 +242,13 @@ primary_expression
 		$$->loc=gentemp(new symboltype("ptr"),$1);
 		$$->loc->type->arrtype=new symboltype("char");
 	}
-	| ROUND_BRACKET_OPEN expression ROUND_BRACKET_CLOSE
+	| CIROPEN expression CIRCLOSE
 	{
 		$$ = $2;
 	}
 	;
 
-
-unary_operator
-	: BITWISE_AND
-	{ $$ = '&';}
-	| MUL
-	{ $$ = '*';}
-	| ADD
-	{ $$ = '+';}
-	| SUB
-	{ $$ = '-';}
-	| BITWISE_NOT
-	{ $$ = '~';}
-	| EXCLAIM
-	{ $$ = '!';}
-	;
-
-postfix_expression
-	:primary_expression      				       //create new Array and store the location of primary expression in it
+postfix_expression: primary_expression      				       //create new Array and store the location of primary expression in it
 	{ 
 
 		$$=new Array();
@@ -277,7 +257,7 @@ postfix_expression
 		$$->loc=$$->Array;
 
 	}
-	| postfix_expression SQUARE_BRACKET_OPEN expression SQUARE_BRACKET_CLOSE 
+	| postfix_expression SQROPEN expression SQRCLOSE 
 	{ 	
 
 		$$=new Array();
@@ -304,7 +284,7 @@ postfix_expression
 	
 		}
 	}
-	| postfix_expression ROUND_BRACKET_OPEN argument_expression_list_opt ROUND_BRACKET_CLOSE       
+	| postfix_expression CIROPEN argument_expression_list_opt CIRCLOSE       
 	//call the function with number of parameters from argument_expression_list_opt
 	{
 
@@ -314,7 +294,9 @@ postfix_expression
 		emit("call",$$->Array->name,$1->Array->name,str);
 
 	}
-	| postfix_expression INC               //generate new temporary, equate it to old one and then add 1
+	| postfix_expression DOT IDENTIFIER { }
+	| postfix_expression ARROW IDENTIFIER { }
+	| postfix_expression INCRE               //generate new temporary, equate it to old one and then add 1
 	{ 
 
 		$$=new Array();
@@ -324,7 +306,7 @@ postfix_expression
 		emit("+",$1->Array->name,$1->Array->name,"1");
 
 	}
-	| postfix_expression DEC                //generate new temporary, equate it to old one and then subtract 1
+	| postfix_expression DECRE                //generate new temporary, equate it to old one and then subtract 1
 	{
 
 		$$=new Array();	
@@ -334,17 +316,11 @@ postfix_expression
 		emit("-",$1->Array->name,$1->Array->name,"1");
 
 	}
-	| ROUND_BRACKET_OPEN type_name ROUND_BRACKET_CLOSE CURLY_BRACKET_OPEN initializer_list CURLY_BRACKET_CLOSE {  }
-	| ROUND_BRACKET_OPEN type_name ROUND_BRACKET_CLOSE CURLY_BRACKET_OPEN initializer_list COMMA CURLY_BRACKET_CLOSE {  }
+	| CIROPEN type_name CIRCLOSE CUROPEN initializer_list CURCLOSE {  }
+	| CIROPEN type_name CIRCLOSE CUROPEN initializer_list COMMA CURCLOSE {  }
 	;
 
-argument_expression_list_opt
-	: argument_expression_list {$$ = $1;}
-	| %empty {$$ = 0;}
-    ;
-
-argument_expression_list
-	: assignment_expression
+argument_expression_list: assignment_expression
 	{
 	    $$=1;                                      //one argument and emit param
 		emit("param",$1->loc->name);	
@@ -356,17 +332,20 @@ argument_expression_list
 	}
 	;
 
-unary_expression
-	: postfix_expression
+argument_expression_list_opt: argument_expression_list {$$ = $1;}
+	| %empty {$$ = 0;}
+    ;
+
+unary_expression: postfix_expression
 	{ 
 		$$ = $1;
 	}
-	| INC unary_expression
+	| INCRE unary_expression
 	{
 		emit("+",$2->Array->name,$2->Array->name,"1");
 		$$=$2;
 	}
-	| DEC unary_expression
+	| DECRE unary_expression
 	{
 		emit("-",$2->Array->name,$2->Array->name,"1");
 
@@ -418,115 +397,101 @@ unary_expression
 	}
 	| SIZEOF unary_expression
 	{ }
-	| SIZEOF ROUND_BRACKET_OPEN type_name ROUND_BRACKET_CLOSE
+	| SIZEOF CIROPEN type_name CIRCLOSE
 	{ }
 	;
 
+unary_operator: AND
+	{ $$ = '&';}
+	| MUL
+	{ $$ = '*';}
+	| ADD
+	{ $$ = '+';}
+	| SUB
+	{ $$ = '-';}
+	| NEQ
+	{ $$ = '~';}
+	| EXCL
+	{ $$ = '!';}
+	;
 
-cast_expression
-	: unary_expression
+
+cast_expression: unary_expression
 	{
 		$$ = $1;
 	}
-	| ROUND_BRACKET_OPEN type_name ROUND_BRACKET_CLOSE cast_expression
+	| CIROPEN type_name CIRCLOSE cast_expression
 	{
 		$$=new Array();	
 		$$->Array=convertType($4->Array,var_type);             //generate a new symbol of the given type
 	}
 	;
 
-multiplicative_expression
-	: cast_expression  
+multiplicative_expression: cast_expression  
 	{
-
 		$$ = new Expression();             //generate new expression							    
 		if($1->array_type=="arr") 			   //if it is of type arr
 		{
 			$$->loc = gentemp($1->loc->type);	
-
 			emit("=[]", $$->loc->name, $1->Array->name, $1->loc->name);     //emit with Array right
-
-	
 		}
 		else if($1->array_type=="ptr")         //if it is of type ptr
 		{ 
 			$$->loc = $1->loc;        //equate the locs
-
-	
 		}
 		else
 		{
 			$$->loc = $1->Array;
-
-	
 		}
 	}
 	| multiplicative_expression MUL cast_expression           //if we have multiplication
 	{ 
-
 		if(!compareSymbolType($1->loc, $3->Array))         
 			cout<<"Type Error in Program"<< endl;	// error
 		else 								 //if types are compatible, generate new temporary and equate to the product
 		{
 			$$ = new Expression();	
-
 			$$->loc = gentemp(new symboltype($1->loc->type->type));
-
 			emit("*", $$->loc->name, $1->loc->name, $3->Array->name);
-
-	
 		}
 	}
 	| multiplicative_expression DIV cast_expression      //if we have division
 	{
-
 		if(!compareSymbolType($1->loc, $3->Array))
 			cout << "Type Error in Program"<< endl;
 		else    //if types are compatible, generate new temporary and equate to the quotient
 		{
 			$$ = new Expression();
-
 			$$->loc = gentemp(new symboltype($1->loc->type->type));
-
-			emit("/", $$->loc->name, $1->loc->name, $3->Array->name);
-	
-							
+			emit("/", $$->loc->name, $1->loc->name, $3->Array->name);						
 		}
 	}
 	| multiplicative_expression MOD cast_expression    //if we have mod
 	{
-
 		if(!compareSymbolType($1->loc, $3->Array))
 			cout << "Type Error in Program"<< endl;		
 		else 		 //if types are compatible, generate new temporary and equate to the quotient
 		{
 			$$ = new Expression();
-
 			$$->loc = gentemp(new symboltype($1->loc->type->type));
-
-			emit("%", $$->loc->name, $1->loc->name, $3->Array->name);	
-	
-		
+			emit("%", $$->loc->name, $1->loc->name, $3->Array->name);		
 		}
 	}
 	;
 
-additive_expression
-	: multiplicative_expression   { $$=$1; }            //simply equate
+additive_expression: multiplicative_expression   
+	{ 
+		$$=$1; 
+	}            //simply equate
 	| additive_expression ADD multiplicative_expression      //if we have addition
 	{
-
 		if(!compareSymbolType($1->loc, $3->loc))
 			cout << "Type Error in Program"<< endl;
 		else    	//if types are compatible, generate new temporary and equate to the sum
 		{
 			$$ = new Expression();	
-
 			$$->loc = gentemp(new symboltype($1->loc->type->type));
-
 			emit("+", $$->loc->name, $1->loc->name, $3->loc->name);
-
-	
 		}
 	}
 	| additive_expression SUB multiplicative_expression    //if we have subtraction
@@ -537,58 +502,41 @@ additive_expression
 		else        //if types are compatible, generate new temporary and equate to the difference
 		{	
 			$$ = new Expression();	
-
 			$$->loc = gentemp(new symboltype($1->loc->type->type));
-
 			emit("-", $$->loc->name, $1->loc->name, $3->loc->name);
-
-	
 		}
 	}
 ;
 
-shift_expression
-	: additive_expression   { $$=$1; }              //simply equate
-	| shift_expression SHIFT_LEFT additive_expression   
+shift_expression: additive_expression   { $$=$1; }              //simply equate
+	| shift_expression LESH additive_expression   
 	{ 
-
 		if(!($3->loc->type->type == "int"))
 			cout << "Type Error in Program"<< endl; 		
 		else            //if base type is int, generate new temporary and equate to the shifted value
 		{		
 			$$ = new Expression();	
-
 			$$->loc = gentemp(new symboltype("int"));
-
 			emit("<<", $$->loc->name, $1->loc->name, $3->loc->name);
-
-	
 		}
 	}
-	| shift_expression SHIFT_RIGHT additive_expression
+	| shift_expression RISH additive_expression
 	{ 	
 		if(!($3->loc->type->type == "int"))
 		{
-	
 			cout << "Type Error in Program"<< endl; 		
 		}
 		else  		//if base type is int, generate new temporary and equate to the shifted value
 		{		
-	
 			$$ = new Expression();	
-
 			$$->loc = gentemp(new symboltype("int"));
-
 			emit(">>", $$->loc->name, $1->loc->name, $3->loc->name);
-
-	
 		}
 	}
 	;
 
-relational_expression
-	: shift_expression   { $$=$1; }              //simply equate
-	| relational_expression BIT_SL shift_expression
+relational_expression: shift_expression   { $$=$1; }              //simply equate
+	| relational_expression LST shift_expression
 	{
 		if(!compareSymbolType($1->loc, $3->loc)) 
 		{
@@ -599,22 +547,14 @@ relational_expression
 		{      //check compatible types		
 								
 			$$ = new Expression();
-
 			$$->type = "bool";                         //new type is boolean
-		
 			$$->truelist = makelist(nextinstr());     //makelist for truelist and falselist
-
 			$$->falselist = makelist(nextinstr()+1);
-
 			emit("<", "", $1->loc->name, $3->loc->name);     //emit statement if a<b goto .. 
-
-	
 			emit("goto", "");	//emit statement goto ..
-
-	
 		}
 	}
-	| relational_expression BIT_SR shift_expression          //similar to above, check compatible types,make new lists and emit
+	| relational_expression GRT shift_expression          //similar to above, check compatible types,make new lists and emit
 	{
 		if(!compareSymbolType($1->loc, $3->loc)) 
 		{
@@ -623,24 +563,15 @@ relational_expression
 		}
 		else 
 		{
-	
 			$$ = new Expression();	
-
 			$$->type = "bool";
-
 			$$->truelist = makelist(nextinstr());
-
 			$$->falselist = makelist(nextinstr()+1);
-
 			emit(">", "", $1->loc->name, $3->loc->name);
-
-	
 			emit("goto", "");
-
-	
 		}	
 	}
-	| relational_expression LTE shift_expression			 //similar to above, check compatible types,make new lists and emit
+	| relational_expression LSE shift_expression			 //similar to above, check compatible types,make new lists and emit
 	{
 		if(!compareSymbolType($1->loc, $3->loc)) 
 		{
@@ -651,52 +582,34 @@ relational_expression
 		{		
 	
 			$$ = new Expression();		
-
 			$$->type = "bool";
-
 			$$->truelist = makelist(nextinstr());
-
 			$$->falselist = makelist(nextinstr()+1);
-
 			emit("<=", "", $1->loc->name, $3->loc->name);
-
-	
 			emit("goto", "");
-
-	
 		}		
 	}
-	| relational_expression GTE shift_expression 			 //similar to above, check compatible types,make new lists and emit
+	| relational_expression GRE shift_expression 			 //similar to above, check compatible types,make new lists and emit
 	{
 		if(!compareSymbolType($1->loc, $3->loc))
 		{
-	 
 			cout << "Type Error in Program"<< endl;
 		}
 		else 
 		{
 	
 			$$ = new Expression();
-
 			$$->type = "bool";
-
 			$$->truelist = makelist(nextinstr());
-
 			$$->falselist = makelist(nextinstr()+1);
-
 			emit(">=", "", $1->loc->name, $3->loc->name);
-
-	
 			emit("goto", "");
-
-	
 		}
 	}
 	;
 
-equality_expression
-	: relational_expression  { $$=$1; }						//simply equate
-	| equality_expression EQ relational_expression 
+equality_expression: relational_expression  { $$=$1; }						//simply equate
+	| equality_expression EQUATE relational_expression 
 	{
 		if(!compareSymbolType($1->loc, $3->loc))                //check compatible types
 		{
@@ -705,30 +618,19 @@ equality_expression
 		}
 		else 
 		{
-	
 			convertBoolToInt($1);                  //convert bool to int
-	
 			convertBoolToInt($3);
-
 			$$ = new Expression();
-
 			$$->type = "bool";
-
 			$$->truelist = makelist(nextinstr());            //make lists for new expression
-
 			$$->falselist = makelist(nextinstr()+1); 
-
 			emit("==", "", $1->loc->name, $3->loc->name);      //emit if a==b goto ..
-
-	
-			emit("goto", "");				//emit goto ..
-
-	
+			emit("goto", "");				//emit goto ..	
 		}
 		
 	}
 
-	| equality_expression NEQ relational_expression   //Similar to above, check compatibility, convert bool to int, make list and emit
+	| equality_expression NEQE relational_expression   //Similar to above, check compatibility, convert bool to int, make list and emit
 	{
 		if(!compareSymbolType($1->loc, $3->loc)) 
 		{
@@ -737,119 +639,77 @@ equality_expression
 		}
 		else 
 		{			
-	
 			convertBoolToInt($1);	
-
 			convertBoolToInt($3);
-
 			$$ = new Expression();                 //result is boolean
-
 			$$->type = "bool";
-
 			$$->truelist = makelist(nextinstr());
-
 			$$->falselist = makelist(nextinstr()+1);
-
 			emit("!=", "", $1->loc->name, $3->loc->name);
-
-	
 			emit("goto", "");
-
-	
 		}
 	}
 	;
 
-and_expression
-	: equality_expression  { $$=$1; }						//simply equate
-	| and_expression BITWISE_AND equality_expression 
+and_expression: equality_expression  { $$=$1; }						//simply equate
+	| and_expression AND equality_expression 
 	{
 		if(!compareSymbolType($1->loc, $3->loc))         //check compatible types 
 		{
-			
 			cout << "Type Error in Program"<< endl;
 		}
 		else 
-		{
-	              
+		{      
 			convertBoolToInt($1);                             //convert bool to int
-
 			convertBoolToInt($3);
-
 			$$ = new Expression();
-
 			$$->type = "not-boolean";                   //result is not boolean
-
 			$$->loc = gentemp(new symboltype("int"));
-
 			emit("&", $$->loc->name, $1->loc->name, $3->loc->name);               //emit the quad
-
-	
 		}
 	}
 	;
 
-exclusive_or_expression
-	: and_expression  { $$=$1; }				//simply equate
-	| exclusive_or_expression BITWISE_XOR and_expression    
+exclusive_or_expression: and_expression  { $$=$1; }				//simply equate
+	| exclusive_or_expression XOR and_expression    
 	{
 		if(!compareSymbolType($1->loc, $3->loc))    //same as and_expression: check compatible types, make non-boolean expression and convert bool to int and emit
 		{
-	
 			cout << "Type Error in Program"<< endl;
 		}
 		else 
 		{
-	
 			convertBoolToInt($1);	
-
 			convertBoolToInt($3);
-
 			$$ = new Expression();
-
 			$$->type = "not-boolean";
-
 			$$->loc = gentemp(new symboltype("int"));
-
 			emit("^", $$->loc->name, $1->loc->name, $3->loc->name);
-
-	
 		}
 	}
 	;
 
-inclusive_or_expression
-	: exclusive_or_expression { $$=$1; }			//simply equate
-	| inclusive_or_expression BITWISE_OR exclusive_or_expression          
+inclusive_or_expression: exclusive_or_expression { $$=$1; }			//simply equate
+	| inclusive_or_expression OR exclusive_or_expression          
 	{ 
 		if(!compareSymbolType($1->loc, $3->loc))   //same as and_expression: check compatible types, make non-boolean expression and convert bool to int and emit
 		{
-	
 			cout << "Type Error in Program"<< endl;
 		}
 		else 
 		{
-	
 			convertBoolToInt($1);		
-
 			convertBoolToInt($3);
-
 			$$ = new Expression();
-
 			$$->type = "not-boolean";
-
 			$$->loc = gentemp(new symboltype("int"));
-
 			emit("|", $$->loc->name, $1->loc->name, $3->loc->name);
-
-	
 		} 
 	}
 	;
 
-logical_and_expression
-	: inclusive_or_expression  { $$=$1; }				//simply equate
-	| logical_and_expression N AND M inclusive_or_expression      //backpatching involved here
+logical_and_expression: inclusive_or_expression  { $$=$1; }				//simply equate
+	| logical_and_expression N ANDNUM M inclusive_or_expression      //backpatching involved here
 	{ 
 
 		convertIntToBool($5);         //convert inclusive_or_expression int to bool
@@ -864,9 +724,8 @@ logical_and_expression
 	}
 	;
 
-logical_or_expression
-	: logical_and_expression   { $$=$1; }				//simply equate
-	| logical_or_expression N OR M logical_and_expression        //backpatching involved here
+logical_or_expression: logical_and_expression   { $$=$1; }				//simply equate
+	| logical_or_expression N ORNUM M logical_and_expression        //backpatching involved here
 	{ 
 
 		convertIntToBool($5);			 //convert logical_and_expression int to bool
@@ -880,8 +739,7 @@ logical_or_expression
 
 	}
 	;
-conditional_expression 
-	: logical_or_expression {$$=$1;}       //simply equate
+conditional_expression: logical_or_expression {$$=$1;}       //simply equate
 	| logical_or_expression N QUESTION M expression N COLON M conditional_expression 
 	{
 
@@ -909,85 +767,70 @@ conditional_expression
 	}
 	;
 
-assignment_expression
-	: conditional_expression {$$=$1;}         //simply equate
+assignment_expression: conditional_expression {$$=$1;}         //simply equate
 	| unary_expression assignment_operator assignment_expression 
 	 {
 		if($1->array_type=="arr")       //if type is arr, simply check if we need to convert and emit
 		{
-	
 			$3->loc = convertType($3->loc, $1->type->type);
-
 			emit("[]=", $1->Array->name, $1->loc->name, $3->loc->name);		
-
-	
 		}
 		else if($1->array_type=="ptr")     //if type is ptr, simply emit
 		{
-	
 			emit("*=", $1->Array->name, $3->loc->name);		
-
-	
 		}
 		else                              //otherwise assignment
 		{
-	
 			$3->loc = convertType($3->loc, $1->Array->type->type);
 			emit("=", $1->Array->name, $3->loc->name);
-
-	
-		}
-		
-		$$ = $3;
-
-		
+		}	
+		$$ = $3;	
 	}
 	;
 
-assignment_operator
-	: ASSIGN
+assignment_operator: EQUAL
 	{ }
-	| STAR_EQ
+	| MULEQ
 	{ }
-	| DIV_EQ
+	| DIVEQ
 	{ }
-	| MOD_EQ
+	| MODEQ
 	{ }
-	| ADD_EQ
+	| ADDEQ
 	{ }
-	| SUB_EQ
+	| SUBEQ
 	{ }
-	| SL_EQ
+	| SHLEQ
 	{ }
-	| SR_EQ
+	| SHREQ
 	{ }
-	| BITWISE_AND_EQ
+	| ANDE
 	{ }
-	| BITWISE_XOR_EQ
+	| XORE
 	{ }
-	| BITWISE_OR_EQ
+	| ORE
 	{ }
 	;
 
-expression
-	: assignment_expression
+expression: assignment_expression
 	{ $$ = $1; }
 	| expression COMMA assignment_expression
 	{}
 	;
 
-constant_expression
-	: conditional_expression
+constant_expression: conditional_expression
 	{}
 	;
 
-declaration
-	: declaration_specifiers init_declarator_list_opt SEMICOLON
+declaration: declaration_specifiers init_declarator_list_opt LINEEND
 	{ }
 	;
 
-declaration_specifiers
-	: storage_class_specifier declaration_specifiers_opt
+init_declarator_list_opt: init_declarator_list
+	| %empty
+	;
+
+declaration_specifiers: storage_class_specifier declaration_specifiers_opt
 	{ }
 	| type_specifier declaration_specifiers_opt
 	{ }
@@ -997,44 +840,41 @@ declaration_specifiers
 	{ }
 	;
 
-declaration_specifiers_opt
-	: declaration_specifiers
+declaration_specifiers_opt: declaration_specifiers
 	| %empty
 	;
 
-init_declarator_list
-	: init_declarator
+init_declarator_list: init_declarator
 	{ }
 	| init_declarator_list COMMA init_declarator
 	{ }
 	;
 
-init_declarator_list_opt
-	: init_declarator_list
-	| %empty
-	;
 
-init_declarator
-	: declarator
+
+init_declarator: declarator
 	{
 		$$ = $1;
 	}
-	| declarator ASSIGN initializer
+	| declarator EQUAL initializer
 	{		
 		if($3->val!="") $1->val=$3->val;        //get the initial value and  emit it
 		emit("=", $1->name, $3->name);
 	}
 	;
 
-storage_class_specifier
-	: EXTERN
+storage_class_specifier: EXTERN
 	{ }
 	| STATIC
+	{ }
+	| AUTO
+	{ }
+	| REGISTER
 	{ }
 	;
 
 type_specifier
-	: VOID
+: VOID
 	{ var_type="void"; }
 	| CHAR
 	{ var_type="char"; }
@@ -1098,10 +938,10 @@ direct_declarator
 		currSymPtr = $$;
 
 	}
-	| ROUND_BRACKET_OPEN declarator ROUND_BRACKET_CLOSE {$$=$2;}        //simply equate
-	| direct_declarator SQUARE_BRACKET_OPEN type_qualifier_list assignment_expression SQUARE_BRACKET_CLOSE {	}
-	| direct_declarator SQUARE_BRACKET_OPEN type_qualifier_list SQUARE_BRACKET_CLOSE {	}
-	| direct_declarator SQUARE_BRACKET_OPEN assignment_expression SQUARE_BRACKET_CLOSE 
+	| CIROPEN declarator CIRCLOSE {$$=$2;}        //simply equate
+	| direct_declarator SQROPEN type_qualifier_list assignment_expression SQRCLOSE {	}
+	| direct_declarator SQROPEN type_qualifier_list SQRCLOSE {	}
+	| direct_declarator SQROPEN assignment_expression SQRCLOSE 
 	{
 
 		symboltype *t = $1 -> type;
@@ -1133,7 +973,7 @@ direct_declarator
 	
 		}
 	}
-	| direct_declarator SQUARE_BRACKET_OPEN SQUARE_BRACKET_CLOSE 
+	| direct_declarator SQROPEN SQRCLOSE 
 	{
 
 		symboltype *t = $1 -> type;
@@ -1163,11 +1003,11 @@ direct_declarator
 	
 		}
 	}
-	| direct_declarator SQUARE_BRACKET_OPEN STATIC type_qualifier_list assignment_expression SQUARE_BRACKET_CLOSE {	}
-	| direct_declarator SQUARE_BRACKET_OPEN STATIC assignment_expression SQUARE_BRACKET_CLOSE {	}
-	| direct_declarator SQUARE_BRACKET_OPEN type_qualifier_list MUL SQUARE_BRACKET_CLOSE {	}
-	| direct_declarator SQUARE_BRACKET_OPEN MUL SQUARE_BRACKET_CLOSE {	}
-	| direct_declarator ROUND_BRACKET_OPEN changetable parameter_type_list ROUND_BRACKET_CLOSE 
+	| direct_declarator SQROPEN STATIC type_qualifier_list assignment_expression SQRCLOSE {	}
+	| direct_declarator SQROPEN STATIC assignment_expression SQRCLOSE {	}
+	| direct_declarator SQROPEN type_qualifier_list MUL SQRCLOSE {	}
+	| direct_declarator SQROPEN MUL SQRCLOSE {	}
+	| direct_declarator CIROPEN changetable parameter_type_list CIRCLOSE 
 	{
 
 		ST->name = $1->name;
@@ -1182,8 +1022,8 @@ direct_declarator
 		currSymPtr = $$;
 
 	}
-	| direct_declarator ROUND_BRACKET_OPEN identifier_list ROUND_BRACKET_CLOSE {	}
-	| direct_declarator ROUND_BRACKET_OPEN changetable ROUND_BRACKET_CLOSE 
+	| direct_declarator CIROPEN identifier_list CIRCLOSE {	}
+	| direct_declarator CIROPEN changetable CIRCLOSE 
 	{        //similar as above
 
 		ST->name = $1->name;
@@ -1283,9 +1123,9 @@ type_name
 initializer
 	: assignment_expression
 	{  $$=$1->loc; }
-	| CURLY_BRACKET_OPEN initializer_list CURLY_BRACKET_CLOSE
+	| CUROPEN initializer_list CURCLOSE
 	{ }
-	| CURLY_BRACKET_OPEN initializer_list COMMA CURLY_BRACKET_CLOSE
+	| CUROPEN initializer_list COMMA CURCLOSE
 	{ }
 	;
 
@@ -1314,7 +1154,7 @@ designator_list
 	;
 
 designator
-	: SQUARE_BRACKET_OPEN constant_expression SQUARE_BRACKET_CLOSE
+	: SQROPEN constant_expression SQRCLOSE
 	{ }
 	| DOT IDENTIFIER
 	{ }
@@ -1348,7 +1188,7 @@ labeled_statement
 	;
 
 compound_statement
-	: CURLY_BRACKET_OPEN block_item_list_opt CURLY_BRACKET_CLOSE
+	: CUROPEN block_item_list_opt CURCLOSE
 	{ $$ = $2;}
 	;
 
@@ -1373,13 +1213,13 @@ block_item
 
 
 expression_statement
-	: expression SEMICOLON {$$=$1;}			//simply equate
-	| SEMICOLON {$$ = new Expression();}      //new  expression
+	: expression LINEEND {$$=$1;}			//simply equate
+	| LINEEND {$$ = new Expression();}      //new  expression
 	;
 
 
 selection_statement
-	: IF ROUND_BRACKET_OPEN expression N ROUND_BRACKET_CLOSE M statement N %prec "then"      // if statement without else
+	: IF CIROPEN expression N CIRCLOSE M statement N %prec "then"      // if statement without else
 	{
 
 		backpatch($4->nextlist, nextinstr());        //nextlist of N goes to nextinstr
@@ -1390,7 +1230,7 @@ selection_statement
 		$$->nextlist = merge($8->nextlist, temp);
 
 	}
-	| IF ROUND_BRACKET_OPEN expression N ROUND_BRACKET_CLOSE M statement N ELSE M statement   //if statement with else
+	| IF CIROPEN expression N CIRCLOSE M statement N ELSE M statement   //if statement with else
 	{
 
 		backpatch($4->nextlist, nextinstr());		//nextlist of N goes to nextinstr
@@ -1402,11 +1242,11 @@ selection_statement
 		$$->nextlist = merge($11->nextlist,temp);	
 	
 	}
-	| SWITCH ROUND_BRACKET_OPEN expression ROUND_BRACKET_CLOSE statement {	}       //not to be modelled
+	| SWITCH CIROPEN expression CIRCLOSE statement {	}       //not to be modelled
 	;
 
 iteration_statement	
-	: WHILE M ROUND_BRACKET_OPEN expression ROUND_BRACKET_CLOSE M statement      //while statement
+	: WHILE M CIROPEN expression CIRCLOSE M statement      //while statement
 	{
 
 		$$ = new Statement();    //create statement
@@ -1420,7 +1260,7 @@ iteration_statement
 
 			
 	}
-	| DO M statement M WHILE ROUND_BRACKET_OPEN expression ROUND_BRACKET_CLOSE SEMICOLON      //do statement
+	| DO M statement M WHILE CIROPEN expression CIRCLOSE LINEEND      //do statement
 	{
 
 		$$ = new Statement();     //create statement
@@ -1430,7 +1270,7 @@ iteration_statement
 		$$->nextlist = $7->falselist;                       //move out if statement is false
 		
 	}
-	| FOR ROUND_BRACKET_OPEN expression_statement M expression_statement ROUND_BRACKET_CLOSE M statement      //for loop
+	| FOR CIROPEN expression_statement M expression_statement CIRCLOSE M statement      //for loop
 	{
 
 		$$ = new Statement();   //create new statement
@@ -1443,7 +1283,7 @@ iteration_statement
 		$$->nextlist = $5->falselist;      //move out if statement is false
 
 	}
-	| FOR ROUND_BRACKET_OPEN expression_statement M expression_statement M expression N ROUND_BRACKET_CLOSE M statement
+	| FOR CIROPEN expression_statement M expression_statement M expression N CIRCLOSE M statement
 	{
 
 		$$ = new Statement();		 //create new statement
@@ -1460,18 +1300,18 @@ iteration_statement
 	;
 
 jump_statement
-	: GOTO IDENTIFIER SEMICOLON
+	: GOTO IDENTIFIER LINEEND
 	{$$ = new Statement();}
-	| CONTINUE SEMICOLON
+	| CONTINUE LINEEND
 	{$$ = new Statement();}
-	| BREAK SEMICOLON
+	| BREAK LINEEND
 	{$$ = new Statement();}
-	| RETURN expression SEMICOLON               
+	| RETURN expression LINEEND               
 	{
 		$$ = new Statement();
 		emit("return",$2->loc->name);               //emit return with the name of the return value
 	}
-	| RETURN SEMICOLON 
+	| RETURN LINEEND 
 	{
 		$$ = new Statement();
 		emit("return","");                         //simply emit return

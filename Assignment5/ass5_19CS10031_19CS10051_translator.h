@@ -1,7 +1,9 @@
 #ifndef _TRANSLATE_H
 #define _TRANSLATE_H
 
-#include <bits/stdc++.h>
+#include <iostream>
+#include <vector>
+#include <list>
 using namespace std;
 extern char *yytext;
 extern int yyparse();

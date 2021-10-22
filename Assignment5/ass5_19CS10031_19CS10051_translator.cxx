@@ -1,7 +1,7 @@
-#include "ass5_18CS10021_18CS30040_translator.h"
-#include "sstream"
-#include "string"
-#include "iostream"
+#include "ass5_19CS10031_19CS10051_translator.h"
+#include <sstream>
+#include <string>
+#include <iostream>
 
 symtable *globalST; // global symbol table
 quadArray qA;       // quad array
