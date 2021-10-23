@@ -889,6 +889,18 @@ type_specifier: VOID
 	{ var_type="float"; }
 	| DOUBLE
 	{ }
+	| SIGNED
+    { }
+    | UNSIGNED
+    { }
+    | _BOOL
+    { }
+    | _COMPLEX
+    { }
+    | _IMAGINARY
+    { }
+    | enum_specifier
+    { }
 	;
 
 specifier_qualifier_list: type_specifier specifier_qualifier_list_opt
@@ -901,6 +913,31 @@ specifier_qualifier_list_opt: specifier_qualifier_list
 	| %empty
 	;
 
+enum_specifier: ENUM identifier_opt CUROPEN enum_list CURCLOSE
+    { }
+    | ENUM identifier_opt CUROPEN enum_list COMMA CURCLOSE
+    { }
+    | ENUM IDENTIFIER
+    { }
+    ;
+
+identifier_opt: IDENTIFIER
+    { }
+    | %empty
+    { }
+    ;
+
+enum_list: enumerator
+    { }
+    | enum_list COMMA enumerator
+    { }
+    ;
+
+enumerator: IDENTIFIER
+    {  }
+    | IDENTIFIER EQUAL constant
+    {  }
+    ;
 
 type_qualifier: CONST
 	{ }
@@ -1215,7 +1252,7 @@ selection_statement: IF CIROPEN expression N CIRCLOSE M statement N %prec "then"
 	| SWITCH CIROPEN expression CIRCLOSE statement {	}       //not to be modelled
 	;
 
-iteration_statement	: WHILE M CIROPEN expression CIRCLOSE M statement      //while statement
+iteration_statement: WHILE M CIROPEN expression CIRCLOSE M statement      //while statement
 	{
 
 		$$ = new Statement();    //create statement
