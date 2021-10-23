@@ -6,7 +6,10 @@ Group 2
 19CS10051 - Sajal Chhamunya 
 */
     #include "y.tab.h"
+    #include "ass5_19CS10031_19CS10051_translator.h"
 %}
+
+%option noyywrap
 
 NON_DIGIT           [a-zA-Z_]
 DIGIT               [0-9]

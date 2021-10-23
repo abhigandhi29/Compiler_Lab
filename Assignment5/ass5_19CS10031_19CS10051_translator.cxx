@@ -402,6 +402,7 @@ Expression *convertIntToBool(Expression *e){
         e->truelist = makelist(nextinstr());
         emit("goto", "");
     }
+    return e;
 }
 
 Expression *convertBoolToInt(Expression *e){
@@ -415,6 +416,7 @@ Expression *convertBoolToInt(Expression *e){
 		backpatch(e->falselist, nextinstr());
 		emit("=",e->loc->name, "false");
     }
+    return e;
 }
 
 bool compareSymbolType(sym *&s1, sym *&s2){

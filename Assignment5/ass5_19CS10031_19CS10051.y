@@ -6,7 +6,7 @@
 	#include <string.h>
 	#include <stdio.h>
 
-	#include "ass5_18CS10021_18CS30040_translator.h"
+	#include "ass5_19CS10031_19CS10051_translator.h"
 	extern int yylex();
 	void yyerror(string s);
 	extern string var_type;
@@ -16,21 +16,21 @@
 
 %union {
 	char unaryOp;	//unaryoperator		
-	int inval;
+	int intval;
     float floatval;
     char charval;
     char *stringval;
 
 	int instr_number;		//instruction number: for backpatching	
 	int num_params;			//number of parameters
-	Expression *expr;		//expression
-	Statement *stat;		//statement		
-	symboltype *sym_type;	//symbol type  
-	sym *symp;		//symbol
-	Array *A;  //Array type
+	struct Expression *expr;		//expression
+	struct Statement *stat;		//statement		
+	class symboltype *sym_type;	//symbol type  
+	class sym *symp;		//symbol
+	struct Array *A;  //Array type
 }
 
-%token BREAK CASE CHAR CONST CONTINUE DEFAULT DO DOUBLE ELSE EXTERN FLOAT FOR GOTO IF INLINE INT LONG REGISTER RESTRICT RETURN SHORT SIGNED SIZEOF STATIC STRUCT SWITCH TYPEDEF UNION VOID VOLATILE WHILE 
+// %token BREAK CASE CHAR CONST CONTINUE DEFAULT DO DOUBLE ELSE EXTERN FLOAT FOR GOTO IF INLINE INT LONG REGISTER RESTRICT RETURN SHORT SIGNED SIZEOF STATIC STRUCT SWITCH TYPEDEF UNION VOID VOLATILE WHILE 
 %token <symp> IDENTIFIER 		 		
 %token <floatval> FLOAT_CONSTANT
 %token <charval> CHAR_CONSTANT
@@ -122,7 +122,7 @@
 %token ORE
 %token COMMA
 %token HASH
-%token IDENTIFIER
+// %token IDENTIFIER
 
 %start translation_unit
 
@@ -213,14 +213,16 @@ constant: INTEGER_CONSTANT
 	| FLOAT_CONSTANT
 	{
 		$$=new Expression();
-		$$->loc=gentemp(new symboltype("float"),$1);
-		emit("=",$$->loc->name,string($1));
+		string p=convertFloatToString($1);
+		$$->loc=gentemp(new symboltype("float"),p);
+		emit("=",$$->loc->name,p);
 	}
 	| CHAR_CONSTANT
 	{
 		$$=new Expression();
-		$$->loc=gentemp(new symboltype("char"),$1);
-		emit("=",$$->loc->name,string($1));
+		string p=string(1,$1);
+		$$->loc=gentemp(new symboltype("char"),p);
+		emit("=",$$->loc->name,p);
 	}
 	;
 
@@ -873,8 +875,7 @@ storage_class_specifier: EXTERN
 	{ }
 	;
 
-type_specifier
-: VOID
+type_specifier: VOID
 	{ var_type="void"; }
 	| CHAR
 	{ var_type="char"; }
@@ -890,21 +891,18 @@ type_specifier
 	{ }
 	;
 
-specifier_qualifier_list
-	: type_specifier specifier_qualifier_list_opt
+specifier_qualifier_list: type_specifier specifier_qualifier_list_opt
 	{ }
 	| type_qualifier specifier_qualifier_list_opt
 	{ }
 	;
 
-specifier_qualifier_list_opt
-	: specifier_qualifier_list
+specifier_qualifier_list_opt: specifier_qualifier_list
 	| %empty
 	;
 
 
-type_qualifier
-	: CONST
+type_qualifier: CONST
 	{ }
 	| VOLATILE
 	{ }
@@ -912,13 +910,11 @@ type_qualifier
 	{ }
 	;
 
-function_specifier
-	: INLINE
+function_specifier: INLINE
 	{ } 
 	;
 
-declarator
-	: pointer direct_declarator
+declarator: pointer direct_declarator
 	{ 
 		symboltype *t = $1;
 		while(t->arrtype!=NULL) t = t->arrtype; //for multidimensional arr1s, move in depth till you get the base type
@@ -930,8 +926,7 @@ declarator
 	;
 
 
-direct_declarator
-	: IDENTIFIER                 //if ID, simply add a new variable of var_type
+direct_declarator: IDENTIFIER                 //if ID, simply add a new variable of var_type
 	{
 
 		$$ = $1->update(new symboltype(var_type));
@@ -1038,19 +1033,15 @@ direct_declarator
 		ST->parent = globalST;
 		changeTable(globalST);				// Come back to globalsymbol table
 		currSymPtr = $$;
-		
-
 	}
 	;
 
-type_qualifier_list_opt
-	: type_qualifier_list
+type_qualifier_list_opt: type_qualifier_list
 	| %empty
 	;
 
 
-changetable
-	: %empty 
+changetable: %empty 
 	{ 														// Used for changing to symbol table for a function
 		
 		
@@ -1072,56 +1063,48 @@ changetable
 	}
 	;
 
-pointer
-	: MUL type_qualifier_list_opt
+pointer: MUL type_qualifier_list_opt
 	{$$ = new symboltype("ptr");}
 	| MUL type_qualifier_list_opt pointer
 	{$$ = new symboltype("ptr",$3);}
 	;
 
-type_qualifier_list
-	: type_qualifier
+type_qualifier_list: type_qualifier
 	{ }
 	| type_qualifier_list type_qualifier
 	{ }
 	;
 
 
-parameter_type_list
-	: parameter_list
+parameter_type_list: parameter_list
 	{ }
-	| parameter_list COMMA DOTS
+	| parameter_list COMMA TDOT
 	{ }
 	;
 
-parameter_list
-	: parameter_declaration
+parameter_list: parameter_declaration
 	{ }
 	| parameter_list COMMA parameter_declaration
 	{ }
 	;
 
-parameter_declaration
-	: declaration_specifiers declarator
+parameter_declaration: declaration_specifiers declarator
 	{ }
 	| declaration_specifiers
 	{ }
 	;
 
-identifier_list
-	: IDENTIFIER
+identifier_list: IDENTIFIER
 	{ }
 	| identifier_list COMMA IDENTIFIER
 	{ }
 	;
 
-type_name
-	: specifier_qualifier_list
+type_name: specifier_qualifier_list
 	{ }
 	;
 
-initializer
-	: assignment_expression
+initializer: assignment_expression
 	{  $$=$1->loc; }
 	| CUROPEN initializer_list CURCLOSE
 	{ }
@@ -1129,39 +1112,33 @@ initializer
 	{ }
 	;
 
-initializer_list
-	: designation_opt initializer
+initializer_list: designation_opt initializer
 	{ }
 	| initializer_list COMMA designation_opt initializer
 	{ }
 	;
 
-designation_opt
-	: designation
+designation_opt: designation
 	| %empty
 	;
 
-designation
-	: designator_list ASSIGN
+designation: designator_list EQUAL
 	{ }
 	;
 
-designator_list
-	: designator
+designator_list: designator
 	{ }
 	| designator_list designator
 	{ }
 	;
 
-designator
-	: SQROPEN constant_expression SQRCLOSE
+designator: SQROPEN constant_expression SQRCLOSE
 	{ }
 	| DOT IDENTIFIER
 	{ }
 	;
 
-statement
-	: labeled_statement
+statement: labeled_statement
 	{ }
 	| compound_statement
 	{ $$ = $1;}
@@ -1178,8 +1155,7 @@ statement
 	{$$ = $1;}
 	;
 
-labeled_statement
-	: IDENTIFIER COLON statement
+labeled_statement: IDENTIFIER COLON statement
 	{ }
 	| CASE constant_expression COLON statement
 	{ }
@@ -1187,18 +1163,15 @@ labeled_statement
 	{ }
 	;
 
-compound_statement
-	: CUROPEN block_item_list_opt CURCLOSE
+compound_statement: CUROPEN block_item_list_opt CURCLOSE
 	{ $$ = $2;}
 	;
 
-block_item_list_opt
-	: %empty  { $$=new Statement(); }      //create new statement
+block_item_list_opt: %empty  { $$=new Statement(); }      //create new statement
 	| block_item_list   { $$=$1; }        //simply equate
 	;
 
-block_item_list
-	: block_item   { $$=$1; }			//simply equate
+block_item_list: block_item   { $$=$1; }			//simply equate
 	| block_item_list M block_item    
 	{ 
 		$$=$3;
@@ -1206,20 +1179,17 @@ block_item_list
 	}
 	;
 
-block_item
-	: declaration   { $$=new Statement(); }          //new statement
+block_item: declaration   { $$=new Statement(); }          //new statement
 	| statement   { $$=$1; }				//simply equate
 	;
 
 
-expression_statement
-	: expression LINEEND {$$=$1;}			//simply equate
+expression_statement: expression LINEEND {$$=$1;}			//simply equate
 	| LINEEND {$$ = new Expression();}      //new  expression
 	;
 
 
-selection_statement
-	: IF CIROPEN expression N CIRCLOSE M statement N %prec "then"      // if statement without else
+selection_statement: IF CIROPEN expression N CIRCLOSE M statement N %prec "then"      // if statement without else
 	{
 
 		backpatch($4->nextlist, nextinstr());        //nextlist of N goes to nextinstr
@@ -1245,8 +1215,7 @@ selection_statement
 	| SWITCH CIROPEN expression CIRCLOSE statement {	}       //not to be modelled
 	;
 
-iteration_statement	
-	: WHILE M CIROPEN expression CIRCLOSE M statement      //while statement
+iteration_statement	: WHILE M CIROPEN expression CIRCLOSE M statement      //while statement
 	{
 
 		$$ = new Statement();    //create statement
@@ -1299,8 +1268,7 @@ iteration_statement
 	}
 	;
 
-jump_statement
-	: GOTO IDENTIFIER LINEEND
+jump_statement: GOTO IDENTIFIER LINEEND
 	{$$ = new Statement();}
 	| CONTINUE LINEEND
 	{$$ = new Statement();}
@@ -1318,22 +1286,19 @@ jump_statement
 	}
 	;
 
-translation_unit
-	: external_declaration
+translation_unit: external_declaration
 	{}
 	| translation_unit external_declaration
 	{}
 	;
 
-external_declaration
-	: function_definition
+external_declaration: function_definition
 	{ }
 	| declaration
 	{ }
 	;
 
-function_definition
-	: declaration_specifiers declarator declaration_list_opt changetable compound_statement
+function_definition: declaration_specifiers declarator declaration_list_opt changetable compound_statement
 	{	
 		ST->parent = globalST;
 		changeTable(globalST);               
@@ -1341,15 +1306,13 @@ function_definition
 	;
 
 
-declaration_list
-	: declaration
+declaration_list: declaration
 	{ }
 	| declaration_list declaration
 	{ }
 	;
 
-declaration_list_opt
-	: %empty {  }
+declaration_list_opt: %empty {  }
 	| declaration_list   {  }
 	;
 
