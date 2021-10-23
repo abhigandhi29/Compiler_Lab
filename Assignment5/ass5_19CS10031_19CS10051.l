@@ -133,11 +133,16 @@ WHITESPACE          [ \n\t]
 "#"                 { return HASH; }
 
 
-{IDENTIFIER}        { return IDENTIFIER;}
-{FLOAT_CONST}       { return FLOAT_CONSTANT;}
-{CHAR_CONST}        { return CHAR_CONSTANT;}
-{STR_LIT}           { return STRING_LITERAL;}
-{INT_CONST}         { return INTEGER_CONSTANT;}
+{IDENTIFIER}        {   yylval.symp = ST->lookup(yytext);
+                        return IDENTIFIER;}
+{FLOAT_CONST}       {   yylval.floatval = atof(yytext);
+                        return FLOAT_CONSTANT;}
+{CHAR_CONST}        {   yylval.charval = yytext[0];
+                        return CHAR_CONSTANT;}
+{STR_LIT}           {   yylval.stringval = yytext;
+                        return STRING_LITERAL;}
+{INT_CONST}         {   yylval.intval = atoi(yytext);
+                        return INTEGER_CONSTANT;}
 {WHITESPACE}        {;}
 
 %%
