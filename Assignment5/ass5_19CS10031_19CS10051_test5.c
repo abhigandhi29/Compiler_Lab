@@ -1,35 +1,51 @@
-//  arrays (multidimensional) ,  loops and nested loops
+//  nested if cases ,  loops and nested loops
 
 
 int main()
 {
 	
-	int dp[5][5]; // 2D integer array
 	n = 5;
 	j = 100;
 	i = 0;
 	int i, j, n;
+	int ans = 0;
 	int sum=0;
 	char a='a';
 	int p[5]; // 1D integer array
 
 	for(i=0;i<n;i++) {
 		for(j=0;j<n;j++)  // nested for loop
-			dp[i][j]= sum + i*j; // multi dimensional array
+			ans += i*j;
 	}
 
 	while(i<5) // while loop
 	{
-		i++;
-		++j;
-		p[i]=i*j;
+		i+=2;
+		j*=2;
+		ans-=i*j;
 	}
 
 	do // do-while loop
 	{	i++;
-		sum = sum + p[i];
+		ans = ans + p[i];
 	}while(i<n);
 
+	if(ans>0){
+		if(ans<5){
+			i++;
+		}
+		else{
+			j--;
+		} 
+	}
+	else{
+		if(ans>-5){
+			i++;
+		}
+		else{
+			j--;
+		}
+	}
 	
 
 
