@@ -7,23 +7,25 @@ Group 2
 
 
 
-#ifndef _TRANSLATE_H
-#define _TRANSLATE_H
+#ifndef _TRANSLATE_TINY_C_H
+#define _TRANSLATE_TINY_C_H
 
 #include <iostream>
 #include <vector>
 #include <list>
+
 using namespace std;
+
 extern char *yytext;
 extern int yyparse();
 
 
 #define listsym_itr list<sym>::iterator
-#define list_int list<int>
+#define listInt list<int>
 #define list_sym list<sym>
 
 
-class sym;          //entry in ST
+class sym;          //entry ST
 class symboltype;   //type of symbol
 class symtable;     //symbol table
 class quad;         //entry in quadArray
@@ -40,7 +42,6 @@ class quad{
     print(): printing quad
     type(): printing type1
     type_(): printing type2
-    quad(): overloaded constructors
     */
     public :
         string result;
@@ -55,6 +56,7 @@ class quad{
         quad(string, string, string op = "=", string arg2 = "");
         quad(string, int, string op = "=", string arg2 = "");
         quad(string, float, string op = "=", string arg2 = "");
+        quad(string, double, string op = "=", string arg2 = "");
 };
 
 class quadArray{
@@ -85,15 +87,15 @@ class sym{
     size: size of symbol
     offset: offset of symbol in ST
 	nested: points to the nested symbol table
-	val: initial value of the symbol if specified
+	val: initial value of the symbol (maybe empty)
     sym(): constructor
     update() : method to update different fields of an existing symbol
     */
     public :
         string name;
         symboltype *type;
-        int size;
         int offset;
+        int size;
         symtable *nested;
         string val;
 
@@ -104,28 +106,27 @@ class sym{
 class symboltype{
     /*
     type: type of symbol 
-	width: stores the size of Array (if we encounter an Array)
-	arrtype: for multidimensional arrs
+	width: stores the size of Array
+	arrtype: for multidimensional arrays
 	symboltype(): constructor
     */
     public :
         string type;
         int width;
         symboltype* arrtype;
-
         symboltype(string, symboltype *arrtype = NULL, int width = 1);
 };
 
 class symtable{
     /*
     stri name: name of the Table
-	count: count of the temporary variables
+	count: temporary variables count
 	table: table of symbols
 	parent: parent ST
 	symmtable(): constructor
-	lookup(): lookup for a symbol in ST
-	print(): print the ST
-	update(): update the ST
+	lookup(): check for variable in ST
+	print(): print ST
+	update(): update ST
     */
     public :
         string name;
@@ -146,26 +147,6 @@ extern quadArray qA; // quad Array
 extern basicType bt; // Type ST
 extern long long int instr_count; // count of instr
 
-string convertIntToString(int);
-string convertFloatToString(float);
-string generateSpaces(int);
-
-//generate a temporary variable and insert it in the current ST
-sym *gentemp(symboltype*, string init = "");
-
-//Emit functions
-void emit(string, string, string arg1="", string arg2="");
-void emit(string, string, int, string arg2="");
-void emit(string, string, float, string arg2="");
-
-//Managing boolean expression
-void backpatch(list_int, int);
-list_int makelist(int );
-list_int merge(list_int &l1, list_int &l2);
-
-int nextinstr();
-void update_nextinst();
-
 sym *convertType(sym *, string);
 bool compareSymbolType(sym *&s1, sym *&s2);
 bool compareSymbolType(symboltype *t1, symboltype *t2);
@@ -174,8 +155,28 @@ string printType(symboltype *);
 void changeTable(symtable *);
 void debug(string s);
 
+string convertIntToString(int);
+string convertFloatToString(float);
+string generateSpaces(int);
+
+//generate a temporary variable and insert it in the current ST
+sym *gentemp(symboltype*, string init = "");
+
+//Emit functions
+void emit(string, string, string arg1="", string arg2="");    // different emit functions for different types of 3 address code
+void emit(string, string, int, string arg2="");
+void emit(string, string, float, string arg2="");
+
+//Managing boolean expression
+void backpatch(listInt, int);
+listInt makelist(int );
+listInt merge(listInt &l1, listInt &l2);
+
+int nextinstr();
+void update_nextinst();
+
 struct Statement{
-    list_int nextlist;  // next list for given statement
+    listInt nextlist;  // next list for given statement
 };
 
 struct Array {
@@ -188,9 +189,9 @@ struct Array {
 struct Expression{
     sym *loc;           //pointer to the symbol table entry
     string type;
-    list_int truelist;  //fruelist for boolean expressions
-    list_int falselist; //falselist for boolean expressions
-    list_int nextlist;  //for statement expressions
+    listInt truelist;  //fruelist for boolean expressions
+    listInt falselist; //falselist for boolean expressions
+    listInt nextlist;  //for statement expressions
 };
 
 Expression *convertIntToBool(Expression *);
