@@ -5,7 +5,6 @@ Group 2
 19CS10051 - Sajal Chhamunya 
 */
 
-
 //  nested if cases ,  loops and nested loops
 
 

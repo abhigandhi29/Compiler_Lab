@@ -7,12 +7,12 @@
 
 all: a.out
 	
-	./a.out < ass5_19CS10031_19CS10051_test1.c > ass5_19CS10031_19CS10051_output1.out
-	./a.out < ass5_19CS10031_19CS10051_test2.c > ass5_19CS10031_19CS10051_output2.out
-	./a.out < ass5_19CS10031_19CS10051_test3.c > ass5_19CS10031_19CS10051_output3.out
-	./a.out < ass5_19CS10031_19CS10051_test4.c > ass5_19CS10031_19CS10051_output4.out
-	./a.out < ass5_19CS10031_19CS10051_test5.c > ass5_19CS10031_19CS10051_output5.out
-	./a.out < ass5_19CS10031_19CS10051_test6.c > ass5_19CS10031_19CS10051_output6.out
+	./a.out < ass5_19CS10031_19CS10051_test1.c > ass5_19CS10031_19CS10051_quads1.out
+	./a.out < ass5_19CS10031_19CS10051_test2.c > ass5_19CS10031_19CS10051_quads2.out
+	./a.out < ass5_19CS10031_19CS10051_test3.c > ass5_19CS10031_19CS10051_quads3.out
+	./a.out < ass5_19CS10031_19CS10051_test4.c > ass5_19CS10031_19CS10051_quads4.out
+	./a.out < ass5_19CS10031_19CS10051_test5.c > ass5_19CS10031_19CS10051_quads5.out
+	./a.out < ass5_19CS10031_19CS10051_test6.c > ass5_19CS10031_19CS10051_quads6.out
 	@echo "\n DONE !!\n"
 
 a.out: lex.yy.o y.tab.o ass5_19CS10031_19CS10051_translator.o

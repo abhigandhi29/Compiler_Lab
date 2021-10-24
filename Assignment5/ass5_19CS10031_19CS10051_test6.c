@@ -5,7 +5,6 @@ Group 2
 19CS10051 - Sajal Chhamunya 
 */
 
-
 // tests recursion and arithmatic operations
 
 int fib(int n) 
