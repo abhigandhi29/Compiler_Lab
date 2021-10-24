@@ -13,7 +13,7 @@ basicType bt;       // basic types
 
 void debug(string s){
     /*debugging function*/
-    cout << "debugging !!! " << s << endl;
+    cout << "debugging !!! ->>>>> " << s << endl;
 }
 
 sym::sym(string name, string type_, symboltype *arrtype, int width):name(name),offset(0),val("-"),nested(NULL){
@@ -426,7 +426,7 @@ bool compareSymbolType(sym *&s1, sym *&s2){
     else if(s2 = convertType(s2, type1->type))
         flag = 1;
     
-    return (bool)flag;
+    return flag;
 }
 
 bool compareSymbolType(symboltype *t1, symboltype *t2){
@@ -440,21 +440,21 @@ bool compareSymbolType(symboltype *t1, symboltype *t2){
         return compareSymbolType(t1->arrtype, t2->arrtype);
 }
 
-void backpatch(list_int l1, int addr){
+void backpatch(listInt l1, int addr){
     /*Function to backpatch list of instructions to address*/
     string str_ =  convertIntToString(addr);
-    for(list_int:: iterator itr = l1.begin(); itr != l1.end(); itr++){
+    for(listInt:: iterator itr = l1.begin(); itr != l1.end(); itr++){
         qA.array[*itr].result = str_;
     }
 }
 
-list_int makelist(int init){
+listInt makelist(int init){
     /*Function to create a list*/
-    list_int temp(1, init);
+    listInt temp(1, init);
     return temp;
 }
 
-list_int merge(list_int &l1, list_int &l2){
+listInt merge(listInt &l1, listInt &l2){
     /*Function to merge two lists*/
     l1.merge(l2);
     return l1;
@@ -469,30 +469,6 @@ sym *gentemp(symboltype *t, string str_){
     s->val = str_;
     ST->table.push_back(*s);
     return &ST->table.back();
-}
-
-int computeSize(symboltype *type_){
-    /*Function to compute size of given symbol type*/
-    if(type_->type.compare("void") == 0)
-        return bt.size[1];
-    else if(type_->type.compare("char") == 0)
-        return bt.size[2];
-    else if(type_->type.compare("int") == 0)
-        return bt.size[3];
-    else if(type_->type.compare("float") == 0)
-        return bt.size[4];
-    else if(type_->type.compare("arr") == 0)
-        return type_->width*computeSize(type_->arrtype);
-    else if(type_->type.compare("ptr") == 0)
-        return bt.size[5];
-    else if(type_->type.compare("func") == 0)
-        return bt.size[7];
-    else if(type_->type.compare("float") == 0)
-        return bt.size[8];
-    else if(type_->type.compare("double") == 0)
-        return bt.size[9];
-    else
-        return -1;
 }
 
 string printType(symboltype *type_){
@@ -521,6 +497,31 @@ string printType(symboltype *type_){
         return "NA";
 }
 
+int computeSize(symboltype *type_){
+    /*Function to compute size of given symbol type*/
+    if(type_->type.compare("void") == 0)
+        return bt.size[1];
+    else if(type_->type.compare("char") == 0)
+        return bt.size[2];
+    else if(type_->type.compare("int") == 0)
+        return bt.size[3];
+    else if(type_->type.compare("float") == 0)
+        return bt.size[4];
+    else if(type_->type.compare("arr") == 0)
+        return type_->width*computeSize(type_->arrtype);
+    else if(type_->type.compare("ptr") == 0)
+        return bt.size[5];
+    else if(type_->type.compare("func") == 0)
+        return bt.size[7];
+    else if(type_->type.compare("float") == 0)
+        return bt.size[8];
+    else if(type_->type.compare("double") == 0)
+        return bt.size[9];
+    else
+        return -1;
+}
+
+
 int nextinstr(){
     /*Function to find instruction number*/
 	return qA.array.size();
@@ -542,7 +543,7 @@ int main(){
 	ST = globalST;
 	yyparse();
 	globalST->update();
-	cout<<"\n";
+	cout<<endl;
 	qA.print();	
 	globalST->print();
 }
