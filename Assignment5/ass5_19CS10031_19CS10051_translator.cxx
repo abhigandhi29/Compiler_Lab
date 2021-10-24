@@ -2,6 +2,7 @@
 #include <sstream>
 #include <string>
 #include <iostream>
+using namespace std;
 
 symtable *globalST; // global symbol table
 quadArray qA;       // quad array
@@ -15,14 +16,10 @@ void debug(string s){
     cout << "debugging !!! " << s << endl;
 }
 
-sym::sym(string name, string type_, symboltype *arrtype, int width){
+sym::sym(string name, string type_, symboltype *arrtype, int width):name(name),offset(0),val("-"),nested(NULL){
     /*Constructor for symbol*/
-    (*this).name=name;
     (*this).type=new symboltype(type_, arrtype,width);
     (*this).size=computeSize(type);
-    (*this).offset=0;
-    (*this).val="-";
-    (*this).nested=NULL;
 }
 
 sym* sym::update(symboltype* type_){
@@ -32,17 +29,12 @@ sym* sym::update(symboltype* type_){
     return this;
 }
 
-symboltype::symboltype(string type,symboltype* arrtype,int width){
+symboltype::symboltype(string type,symboltype* arrtype,int width):type(type),arrtype(arrtype),width(width) {
     /*Constructor for symboltype*/
-	(*this).type=type;
-	(*this).width=width;
-	(*this).arrtype=arrtype;
 }
 
-symtable::symtable(string name){
+symtable::symtable(string name):name(name),count(0) {
     /*Constructor for symbol table*/
-    (*this).name=name;
-    (*this).count = 0;//
 }
 
 sym *symtable::lookup(string name){
@@ -65,9 +57,9 @@ void symtable::update(){
     /*Function to update the table*/
     list <symtable*> tb;
     int offset_;
-    listsym_itr itr = (*this).table.begin();
-    while(itr != (*this).table.end()){
-        if(itr == (*this).table.begin()){
+    listsym_itr itr = table.begin();
+    while(itr != table.end()){
+        if(itr == table.begin()){
             itr->offset = 0;
             offset_ = itr->size;
         }
@@ -138,28 +130,19 @@ void symtable::print(){
 	}
 }
 
-quad::quad(string result, string arg1, string op, string arg2){
+quad::quad(string result, string arg1, string op, string arg2):result(result), arg1(arg1), op(op), arg2(arg2){
     /*Overloaded Constructor for quad*/
-	(*this).result = result;
-	(*this).arg1 = arg1;
-	(*this).op = op;
-	(*this).arg2 = arg2;
+	
 }
 
-quad::quad(string result, float arg1, string op, string arg2){
+quad::quad(string result, float arg1, string op, string arg2):result(result), op(op), arg2(arg2){
     /*Overloaded Constructor for quad*/
-	(*this).result = result;
 	(*this).arg1 = convertFloatToString(arg1);
-	(*this).op = op;
-	(*this).arg2 = arg2;
 }
 
-quad::quad(string result, int arg1, string op, string arg2){
+quad::quad(string result, int arg1, string op, string arg2):result(result), op(op), arg2(arg2){
     /*Overloaded Constructor for quad*/
-	(*this).result = result;
-	(*this).arg1 = convertFloatToString(arg1);
-	(*this).op = op;
-	(*this).arg2 = arg2;
+	(*this).arg1 = convertIntToString(arg1);
 }
 
 void quad::print(){
@@ -180,7 +163,16 @@ void quad::print(){
 	else if(op=="%"){
 		(*this).type();
 	}
-	else if(op=="|"){
+	else if(op=="!="){
+		(*this).type_();
+	}
+	else if(op=="<="){
+		(*this).type_();
+	}
+	else if(op=="<"){				
+		(*this).type_();
+	}
+    else if(op=="|"){
 		(*this).type();
 	}
 	else if(op=="^"){	
@@ -190,15 +182,6 @@ void quad::print(){
 		(*this).type();
 	}
 	else if(op=="=="){
-		(*this).type_();
-	}
-	else if(op=="!="){
-		(*this).type_();
-	}
-	else if(op=="<="){
-		(*this).type_();
-	}
-	else if(op=="<"){				
 		(*this).type_();
 	}
 	else if(op==">"){
@@ -282,7 +265,7 @@ void basicType::addType(string type_, int size){
 string generateSpaces(int n){
     /*Function to generate spaced for prettying printing*/
     string temp="";
-    while(n--){
+    for(int i=0;i<n;i++){
         temp+=" ";
     }
     return temp;
@@ -357,6 +340,10 @@ sym* convertType(sym* sym_, string return_type){
 			emit("=",temp->name,"int2char("+(*sym_).name+")");
 			return temp;
 		}
+        if(return_type == "double"){
+			emit("=",temp->name,"int2double("+(*sym_).name+")");
+			return temp;
+		}
 		return sym_;
 	}
 	else if((*sym_).type->type == "float"){
@@ -368,11 +355,19 @@ sym* convertType(sym* sym_, string return_type){
 			emit("=",temp->name,"float2char("+(*sym_).name+")");
 			return temp;
 		}
+        if(return_type == "double"){
+			emit("=",temp->name,"float2double("+(*sym_).name+")");
+			return temp;
+		}
 		return sym_;
 	}
 	else if((*sym_).type->type == "char"){
 		if(return_type == "int"){
 			emit("=",temp->name,"char2int("+(*sym_).name+")");
+			return temp;
+		}
+        if(return_type == "float"){
+			emit("=",temp->name,"char2float("+(*sym_).name+")");
 			return temp;
 		}
 		if(return_type == "double"){
@@ -491,7 +486,11 @@ int computeSize(symboltype *type_){
     else if(type_->type.compare("ptr") == 0)
         return bt.size[5];
     else if(type_->type.compare("func") == 0)
-        return bt.size[6];
+        return bt.size[7];
+    else if(type_->type.compare("float") == 0)
+        return bt.size[8];
+    else if(type_->type.compare("double") == 0)
+        return bt.size[9];
     else
         return -1;
 }
@@ -514,6 +513,10 @@ string printType(symboltype *type_){
 		return bt.type[6]+"("+convertIntToString(type_->width)+","+printType(type_->arrtype)+")";
 	else if(type_->type.compare("func") == 0)
         return bt.type[7];
+    else if(type_->type.compare("float") == 0)
+        return bt.type[8];
+    else if(type_->type.compare("double") == 0)
+        return bt.type[9];
 	else
         return "NA";
 }
@@ -529,10 +532,12 @@ int main(){
 	bt.addType("void",0);
 	bt.addType("char",1);
 	bt.addType("int",4);
-	bt.addType("float",8);
+    bt.addType("long",8);
 	bt.addType("ptr",4);
 	bt.addType("arr",0);
 	bt.addType("func",0);
+    bt.addType("float",8);
+    bt.addType("double",16);
 	globalST = new symtable("Global");
 	ST = globalST;
 	yyparse();

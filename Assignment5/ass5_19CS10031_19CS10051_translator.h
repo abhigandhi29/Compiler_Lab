@@ -1,7 +1,6 @@
 #ifndef _TRANSLATE_H
 #define _TRANSLATE_H
 
-#include <bits/stdc++.h>
 #include <iostream>
 #include <vector>
 #include <list>
@@ -20,6 +19,55 @@ class symboltype;   //type of symbol
 class symtable;     //symbol table
 class quad;         //entry in quadArray
 class quadArray;    //quadArray
+
+
+
+class quad{
+    /*
+    result: result
+    op: operator
+    arg1: argument 1
+    arg2: argument 2
+    print(): printing quad
+    type(): printing type1
+    type_(): printing type2
+    quad(): overloaded constructors
+    */
+    public :
+        string result;
+        string op;
+        string arg1;
+        string arg2;
+
+        void print();
+        void type();
+        void type_();
+
+        quad(string, string, string op = "=", string arg2 = "");
+        quad(string, int, string op = "=", string arg2 = "");
+        quad(string, float, string op = "=", string arg2 = "");
+};
+
+class quadArray{
+    /*
+    array: list of quads
+    print(): print array
+    */
+    public:
+        vector<quad> array;
+        void print();
+};
+
+class basicType{
+    /*
+    type: type name
+    size: size of type
+    */
+    public :
+        vector<string> type;
+        vector<int> size;
+        void addType(string, int);
+};
 
 class sym{
     /*
@@ -79,53 +127,6 @@ class symtable{
         sym *lookup(string);
         void print();
         void update();
-};
-
-class quad{
-    /*
-    result: result
-    op: operator
-    arg1: argument 1
-    arg2: argument 2
-    print(): printing quad
-    type(): printing type1
-    type_(): printing type2
-    quad(): overloaded constructors
-    */
-    public :
-        string result;
-        string op;
-        string arg1;
-        string arg2;
-
-        void print();
-        void type();
-        void type_();
-
-        quad(string, string, string op = "=", string arg2 = "");
-        quad(string, int, string op = "=", string arg2 = "");
-        quad(string, float, string op = "=", string arg2 = "");
-};
-
-class quadArray{
-    /*
-    array: list of quads
-    print(): print array
-    */
-    public:
-        vector<quad> array;
-        void print();
-};
-
-class basicType{
-    /*
-    type: type name
-    size: size of type
-    */
-    public :
-        vector<string> type;
-        vector<int> size;
-        void addType(string, int);
 };
 
 

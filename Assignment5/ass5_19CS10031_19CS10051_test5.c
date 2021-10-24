@@ -8,6 +8,7 @@ int main()
 	j = 100;
 	i = 0;
 	int i, j, n;
+	int x;
 	int ans = 0;
 	int sum=0;
 	char a='a';
