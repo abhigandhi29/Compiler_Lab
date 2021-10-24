@@ -1,3 +1,12 @@
+/*
+Assignment 5 - Machine Independent Code Generator for tinyC
+Group 2
+19CS10031 - Abhishek Gandhi
+19CS10051 - Sajal Chhamunya 
+*/
+
+
+
 #ifndef _TRANSLATE_H
 #define _TRANSLATE_H
 

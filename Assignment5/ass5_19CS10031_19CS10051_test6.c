@@ -1,3 +1,11 @@
+/*
+Assignment 5 - Machine Independent Code Generator for tinyC
+Group 2
+19CS10031 - Abhishek Gandhi
+19CS10051 - Sajal Chhamunya 
+*/
+
+
 // tests recursion and arithmatic operations
 
 int fib(int n) 

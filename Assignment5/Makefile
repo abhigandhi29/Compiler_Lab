@@ -1,3 +1,10 @@
+
+# Assignment 5 - Machine Independent Code Generator for tinyC
+# Group 2
+# 19CS10031 - Abhishek Gandhi
+# 19CS10051 - Sajal Chhamunya 
+
+
 all: a.out
 	
 	./a.out < ass5_19CS10031_19CS10051_test1.c > ass5_19CS10031_19CS10051_output1.out
