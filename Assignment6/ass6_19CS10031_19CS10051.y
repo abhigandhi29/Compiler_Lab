@@ -178,7 +178,7 @@ primary_expression: IDENTIFIER
 		conv >> x;
 		x=".LC"+x;debug("err18");
 		$$->loc=x;
-		str_consts.pb(*$1);
+		str_consts.push_back(*$1);
 
 	}
 	| '(' expression ')'
@@ -328,7 +328,7 @@ argument_expression_list: assignment_expression
 		first->name=$1->loc;
 		first->type=GST->lookup($1->loc)->type;debug("err2");
 		$$ = new vector<param*>;
-		$$->pb(first);debug("err3");
+		$$->push_back(first);debug("err3");
 	}
 	| argument_expression_list ',' assignment_expression
 	{
@@ -1176,11 +1176,11 @@ declaration: declaration_specifiers init_declarator_list ';'
 		Types curr_type=$1;
 		int curr_size=-1;	
 		if(curr_type==INT){debug("err2");
-			curr_size=size_of_int;}
+			curr_size=4;}
 		else if(curr_type==CHAR){debug("err3");
-			curr_size=size_of_char;}
+			curr_size=1;}
 		else if(curr_type==DOUBLE){
-			curr_size=size_of_double;debug("err4");}
+			curr_size=8;debug("err4");}
 		vector<declarations*> list=*($2);
 		debug("err5");
 		for (vector<declarations*>::iterator it = list.begin(); it != list.end(); ++it)
@@ -1235,8 +1235,8 @@ declaration: declaration_specifiers init_declarator_list ';'
                 three->type.type2 = curr_type;debug("err23");
                 three->type.pointers = curr_dec->pointers;
                 debug("err24");
-                GST->offset += size_of_pointer - curr_size;
-                three->size = size_of_pointer;debug("err25");
+                GST->offset += 8 - curr_size;
+                three->size = 8;debug("err25");
             }
 		}
 		
@@ -1270,11 +1270,11 @@ init_declarator_list: init_declarator
 	{
 		debug("err1");
 		$$ = new vector<declarations*>;
-		$$->pb($1);debug("err2");
+		$$->push_back($1);debug("err2");
 	}
 	| init_declarator_list ',' init_declarator
 	{	debug("err3");
-		$1->pb($3);
+		$1->push_back($3);
 		$$=$1;
 	}
 	;
@@ -1415,7 +1415,7 @@ direct_declarator: IDENTIFIER
 		$$=$1;debug("err4");
 		int index;
 		index=0;debug("err4");
-		$$->list.pb(index);
+		$$->list.push_back(index);
 		debug("err4");
 	}
 	| direct_declarator '[' type_qualifier_list_opt assignment_expression ']'
@@ -1427,7 +1427,7 @@ direct_declarator: IDENTIFIER
 		$$=$1;
 		int index;debug("err4");
 		 index=GST->lookup($4->loc)->init_val->a;
-		$$->list.pb(index);
+		$$->list.push_back(index);
 		debug("err4");
 	}
 	| direct_declarator '[' STATIC_KEY type_qualifier_list_opt assignment_expression ']'
@@ -1460,14 +1460,14 @@ direct_declarator: IDENTIFIER
             	//cerr << "array was entered\n";
 				function_sym_tab->lookup(curr_param->name,curr_param->type.type);debug("err4");
 				function_sym_tab->lookup(curr_param->name)->type.type2=INT;debug("err4");
-				function_sym_tab->lookup(curr_param->name)->type.dims.pb(0);debug("err4");
+				function_sym_tab->lookup(curr_param->name)->type.dims.push_back(0);debug("err4");
             }
             else if(curr_param->type.type==PTR)
             {	debug("err4");
             	cerr << "pointer was made\n";debug("err4");
             	function_sym_tab->lookup(curr_param->name,curr_param->type.type);debug("err4");
 				function_sym_tab->lookup(curr_param->name)->type.type2=INT;debug("err4");
-				function_sym_tab->lookup(curr_param->name)->type.dims.pb(0);
+				function_sym_tab->lookup(curr_param->name)->type.dims.push_back(0);
             }
 			else
 				function_sym_tab->lookup(curr_param->name,curr_param->type.type);
@@ -1821,9 +1821,9 @@ function_prototype:declaration_specifiers declarator
        debug("err");
         Types curr_type = $1;
         int curr_size = -1;debug("err");
-        if(curr_type == CHAR) curr_size = size_of_char;
-        if(curr_type == INT)  curr_size = size_of_int;debug("err");
-        if(curr_type == DOUBLE)  curr_size = size_of_double;        
+        if(curr_type == CHAR) curr_size = 1;
+        if(curr_type == INT)  curr_size = 4;debug("err");
+        if(curr_type == DOUBLE)  curr_size = 8;        
         	debug("err");
         declarations *curr_dec = $2;debug("err");
         sym_tab_row *three = gst.lookup(curr_dec->name);
