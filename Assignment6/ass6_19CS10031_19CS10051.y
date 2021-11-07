@@ -130,8 +130,7 @@ void debug (string str){
 
 
 
-primary_expression
-	: IDENTIFIER
+primary_expression: IDENTIFIER
 	{
 	 	$$ = new expression;debug("err1");
 	 	string t = (*($1));debug("err2");
@@ -188,8 +187,7 @@ primary_expression
 	}
 	;
 
-postfix_expression
-	: primary_expression {debug("err1");}
+postfix_expression: primary_expression {debug("err1");}
 	| postfix_expression '[' expression ']'
 	{
 		
@@ -323,8 +321,7 @@ postfix_expression
 	;
 
 
-argument_expression_list
-	: assignment_expression
+argument_expression_list: assignment_expression
 	{	
 	
 		param *first=new param;debug("err1");
@@ -343,8 +340,7 @@ argument_expression_list
 	}
 	;
 
-unary_expression
-	: postfix_expression{debug("err1");}
+unary_expression: postfix_expression{debug("err1");}
 	{
 		
 	}
@@ -445,8 +441,7 @@ unary_expression
 	{}
 	;
 
-unary_operator
-	: '&'
+unary_operator: '&'
 	{
 		$$='&';debug("err1");
 	}
@@ -472,8 +467,7 @@ unary_operator
 	}
 	;
 
-cast_expression
-	: unary_expression
+cast_expression: unary_expression
 	{
 		debug("err1");
 	}
@@ -483,8 +477,7 @@ cast_expression
 	}
 	;
 
-multiplicative_expression
-	: cast_expression
+multiplicative_expression: cast_expression
 	{
 		$$=new expression;
 		debug("err1");
@@ -633,8 +626,7 @@ multiplicative_expression
 	}
 	;
 
-additive_expression
-	: multiplicative_expression {debug("err1");}
+additive_expression: multiplicative_expression {debug("err1");}
 	| additive_expression '+' multiplicative_expression
 	{	debug("err2");
 		$$=new expression();
@@ -711,8 +703,7 @@ additive_expression
 	}
 	;
 
-shift_expression
-	: additive_expression {debug("err1");}
+shift_expression: additive_expression {debug("err1");}
 	| shift_expression LEFT_SHIFT additive_expression
 	{	debug("err2");
 		$$=new expression();
@@ -765,8 +756,7 @@ shift_expression
 	}
 	;
 
-relational_expression
-	: shift_expression {debug("err17");}
+relational_expression: shift_expression {debug("err17");}
 	| relational_expression '<' shift_expression
 	{	debug("err18");
 		$$=new expression();
@@ -897,8 +887,7 @@ relational_expression
 	}
 	;
 
-equality_expression
-	: relational_expression
+equality_expression: relational_expression
 	{	debug("err1");
 		$$=new expression;
 		$$=$1;debug("err2");
@@ -969,8 +958,7 @@ equality_expression
 	}
 	;
 
-and_expression
-	: equality_expression
+and_expression: equality_expression
 	{
 		debug("err1");
 	}
@@ -1002,8 +990,7 @@ and_expression
 	}
 	;
 
-exclusive_or_expression
-	: and_expression
+exclusive_or_expression: and_expression
 	{
 		debug("err1");$$=$1;	
 	}
@@ -1036,8 +1023,7 @@ exclusive_or_expression
 	}
 	;
 
-inclusive_or_expression
-	: exclusive_or_expression
+inclusive_or_expression: exclusive_or_expression
 	{	debug("err1");
 		$$=new expression;
 		$$=$1;debug("err2");
@@ -1070,8 +1056,7 @@ inclusive_or_expression
 	}
 	;
 
-logical_and_expression
-	: inclusive_or_expression
+logical_and_expression: inclusive_or_expression
 	{debug("err13");
 	}
 	| logical_and_expression LOGICAL_AND M inclusive_or_expression
@@ -1083,8 +1068,7 @@ logical_and_expression
 	}
 	;
 
-logical_or_expression
-	: logical_and_expression
+logical_or_expression: logical_and_expression
 	{	debug("err17");
 	}
 	| logical_or_expression LOGICAL_OR M logical_and_expression
@@ -1096,8 +1080,7 @@ logical_or_expression
 	}
 	;
 
-conditional_expression
-	: logical_or_expression
+conditional_expression: logical_or_expression
 	{	debug("err20");
 		$$=$1;
 	}
@@ -1121,8 +1104,7 @@ conditional_expression
 	}
 	;
 
-assignment_expression
-	: conditional_expression
+assignment_expression: conditional_expression
 	{	
 		debug("err1");
 	}
@@ -1154,8 +1136,7 @@ assignment_expression
 	}
 	;
 
-assignment_operator
-	: '='
+assignment_operator: '='
 	{debug("err");}
 	|MULTIPLY_EQUAL
 	{debug("err1");}
@@ -1179,21 +1160,18 @@ assignment_operator
     {debug("err10");}
 	;
 
-expression
-	: assignment_expression
+expression: assignment_expression
 	{	debug("err1");
 	}
 	| expression ',' assignment_expression
 	{debug("err2");}
 	;	
 
-constant_expression
-	: conditional_expression
+constant_expression: conditional_expression
 	{}
 	;
 
-declaration
-	: declaration_specifiers init_declarator_list ';'
+declaration: declaration_specifiers init_declarator_list ';'
 	{	debug("err1");
 		Types curr_type=$1;
 		int curr_size=-1;	
@@ -1268,8 +1246,7 @@ declaration
 
 
 
-declaration_specifiers
-	 : storage_class_specifier
+declaration_specifiers: storage_class_specifier
 	 {debug("err1");}
     | storage_class_specifier declaration_specifiers
     {debug("err2");}
@@ -1289,8 +1266,7 @@ declaration_specifiers
 
 
 
-init_declarator_list
-	: init_declarator
+init_declarator_list: init_declarator
 	{
 		debug("err1");
 		$$ = new vector<declarations*>;
@@ -1303,8 +1279,7 @@ init_declarator_list
 	}
 	;
 
-init_declarator
-	: declarator
+init_declarator: declarator
 	{
 		$$=$1;debug("err2");
 		$$->init_val=NULL;
@@ -1315,8 +1290,7 @@ init_declarator
 		$$->init_val=$3;debug("err3");
 	}
 	;
-storage_class_specifier
-	:TYPEDEF_KEY
+storage_class_specifier:TYPEDEF_KEY
 	{debug("err1");}
 	| EXTERN_KEY
 	{debug("err2");}
@@ -1328,8 +1302,7 @@ storage_class_specifier
 	{debug("err5");}
 	;
 
-type_specifier
-	: VOID_KEY
+type_specifier: VOID_KEY
 	{	debug("err2");
 		$$=VOID;
 	}
@@ -1365,22 +1338,19 @@ type_specifier
 	{debug("err12");}
 	;
 
-specifier_qualifier_list
-	: type_specifier specifier_qualifier_list_opt
+specifier_qualifier_list: type_specifier specifier_qualifier_list_opt
 	{debug("er11r");}
 	| type_qualifier specifier_qualifier_list_opt
 	{debug("err2");}
 	;
 
-specifier_qualifier_list_opt
-	: specifier_qualifier_list
+specifier_qualifier_list_opt: specifier_qualifier_list
 	{debug("err1");}
 	|
 	{debug("err2");}
 	;
 
-enum_specifier
-	: ENUM_KEY '{' enumerator_list '}'
+enum_specifier: ENUM_KEY '{' enumerator_list '}'
 	{debug("err1");}
 	| ENUM_KEY IDENTIFIER '{' enumerator_list '}'
 	{debug("err2");}
@@ -1392,22 +1362,19 @@ enum_specifier
 	{debug("err");}
 	;
 
-enumerator_list
-	: enumerator
+enumerator_list: enumerator
 	{debug("err1");}
 	| enumerator_list ',' enumerator
 	{debug("err2");}
 	;
 
-enumerator
-	: ENUMERATION
+enumerator: ENUMERATION
 	{debug("err1");}
 	| ENUMERATION '=' constant_expression
 	{debug("err2");}
 	;
 
-type_qualifier
-	: CONST_KEY
+type_qualifier: CONST_KEY
 	{debug("err1");}
 	| RESTRICT_KEY
 	{debug("err2");}
@@ -1415,13 +1382,11 @@ type_qualifier
 	{debug("err3");}
 	;
 
-function_specifier
-	: INLINE_KEY
+function_specifier: INLINE_KEY
 	{debug("err");}
 	;
 
-declarator
-	: pointer direct_declarator
+declarator: pointer direct_declarator
 	{	debug("err1");
 		$$=$2;
 		$$->pointers=$1;debug("err2");
@@ -1434,8 +1399,7 @@ declarator
 	;
 
 
-direct_declarator
-	: IDENTIFIER
+direct_declarator: IDENTIFIER
 	{		debug("err4");
 		$$=new declarations;
 		$$->name=*($1);debug("err4");
@@ -1516,8 +1480,7 @@ direct_declarator
 	| direct_declarator '(' identifier_list ')'
 	{debug("err4");}
 	;
-parameter_type_list_opt
-	:
+parameter_type_list_opt:
 	{	debug("err4");
 		$$ =new vector <param*>;
 	}
@@ -1525,8 +1488,7 @@ parameter_type_list_opt
 	{debug("err4");}
 	;
 
-pointer
-	: '*' type_qualifier_list
+pointer: '*' type_qualifier_list
 	{debug("err");}
 	| '*'
 	{
@@ -1540,8 +1502,7 @@ pointer
 	}
 	;
 
-type_qualifier_list_opt
-	: type_qualifier_list
+type_qualifier_list_opt: type_qualifier_list
 	{debug("err");}
 	|
 	{debug("err");}
@@ -1555,15 +1516,13 @@ type_qualifier_list
 	;
 
 
-parameter_type_list
-	: parameter_list
+parameter_type_list: parameter_list
 	
 	| parameter_list ',' ELLIPSES
 	
 	;
 
-parameter_list
-	: parameter_declaration
+parameter_list: parameter_declaration
 	{	debug("err");
 		$$ = new vector<param*>; 
 		$$->push_back($1);
@@ -1575,8 +1534,7 @@ parameter_list
 	}
 	;
 
-parameter_declaration
-	: declaration_specifiers declarator
+parameter_declaration: declaration_specifiers declarator
 	{
 		$$=new param;debug("err");
 		$$->name=$2->name;
@@ -1600,20 +1558,17 @@ parameter_declaration
 	{debug("err");}
 	;
 
-identifier_list
-	: IDENTIFIER
+identifier_list: IDENTIFIER
 	{debug("err");}
 	| identifier_list ',' IDENTIFIER
 	{debug("err");}
 	;
 
-type_name
-	: specifier_qualifier_list
+type_name: specifier_qualifier_list
 	{debug("err");}
 	;
 
-initializer
-	: assignment_expression
+initializer: assignment_expression
 	{	debug("err");
 		$$=$1;
 	}
@@ -1623,41 +1578,35 @@ initializer
 	{debug("err");}
 	;
 
-initializer_list
-	: designation_opt initializer
+initializer_list: designation_opt initializer
 	{debug("err");}
 	| initializer_list ',' designation_opt initializer
 	{debug("err");}
 	;
 
-designation_opt
-	: designation
+designation_opt: designation
 	{debug("err");}
 	|
 	{debug("err");}
 	;
 
-designation
-	: designator_list '='
+designation: designator_list '='
 	{debug("err");}
 	;
 
-designator_list
-	: designator
+designator_list: designator
 	{debug("err");}
 	| designator_list designator
 	{debug("err");}
 	;
 
-designator
-	: '[' constant_expression ']'
+designator: '[' constant_expression ']'
 	{debug("err");}
 	| '.' IDENTIFIER
 	{debug("err");}
 	;
 
-statement
-	: labeled_statement
+statement: labeled_statement
 	{debug("err");debug("err");}
 		| compound_statement
 		| expression_statement
@@ -1666,8 +1615,7 @@ statement
 		| jump_statement
 		;
 
-labeled_statement
-	: IDENTIFIER ':' statement
+labeled_statement: IDENTIFIER ':' statement
 	{debug("err");}
 	| CASE_KEY constant_expression ':' statement
 	{debug("err");}
@@ -1675,8 +1623,7 @@ labeled_statement
 	{debug("err");}
 	;
 
-compound_statement
-	: '{' '}'
+compound_statement: '{' '}'
 	{debug("err");}
 	| '{' block_item_list '}'
 	{	debug("err");
@@ -1684,8 +1631,7 @@ compound_statement
 	}
 	;
 
-block_item_list
-	: block_item
+block_item_list: block_item
 	{	debug("err");
 		$$=$1;
 		QUAD_LIST.backpatch($1->NL,QUAD_LIST.next_inst);
@@ -1698,8 +1644,7 @@ block_item_list
 	}
 	;
 
-block_item
-	: declaration
+block_item: declaration
 	{	debug("err");
 		$$ = new expression;
 
@@ -1708,8 +1653,7 @@ block_item
 	
 	;
 
-expression_statement
-	: ';'
+expression_statement: ';'
 	{
 		$$=new expression;
 	}
@@ -1719,8 +1663,7 @@ expression_statement
 	}
 	;
 
-selection_statement
-	: IF_KEY '(' expression N ')' M statement N
+selection_statement: IF_KEY '(' expression N ')' M statement N
 	{	debug("err");
 		QUAD_LIST.backpatch($4->NL,QUAD_LIST.next_inst);
 		QUAD_LIST.convInttoBool($3);debug("err");
@@ -1747,8 +1690,7 @@ selection_statement
 	}
 	;
 
-iteration_statement
-	: WHILE_KEY M '(' expression N ')' M statement
+iteration_statement: WHILE_KEY M '(' expression N ')' M statement
 	{
 		debug("err");
 		$$ = new expression;
@@ -1789,8 +1731,7 @@ iteration_statement
 
 
 
-jump_statement
-	: GOTO_KEY IDENTIFIER ';'
+jump_statement: GOTO_KEY IDENTIFIER ';'
 	{debug("err");}
 	| CONTINUE_KEY ';'
 	{debug("err");}
@@ -1814,8 +1755,7 @@ jump_statement
 	}
 	;
 
-translation_unit
-    : external_declaration
+translation_unit: external_declaration
     {
     debug("err");
     }
@@ -1825,8 +1765,7 @@ translation_unit
     }
     ;
 
-external_declaration
-    : function_definition
+external_declaration: function_definition
     {
     debug("err");
     }
@@ -1836,8 +1775,7 @@ external_declaration
     }
     ;
 
-function_definition
-    : declaration_specifiers declarator declaration_list compound_statement
+function_definition: declaration_specifiers declarator declaration_list compound_statement
     {
     debug("err");
     }
@@ -1850,8 +1788,7 @@ function_definition
     
     ;
 
-declaration_list
-    :declaration
+declaration_list:declaration
     {
    debug("err");
     }
@@ -1862,8 +1799,7 @@ declaration_list
     ;
 
 
-N
-	:                                              
+N:                                              
 	{	debug("err");
 		$$ =  new expression;  
 		$$->NL = makelist(QUAD_LIST.next_inst); debug("err");
@@ -1872,8 +1808,7 @@ N
 	;
 
 // M is introduced to be a marker for an entry point to starting of parsed Quad code
-M
-	:                                                   
+M:                                                   
 	{		debug("err");
 		$$ =  new expression; 
 		$$->instr = QUAD_LIST.next_inst;debug("err");
@@ -1881,8 +1816,7 @@ M
 	;
 
 
-function_prototype
-    :declaration_specifiers declarator
+function_prototype:declaration_specifiers declarator
     {
        debug("err");
         Types curr_type = $1;
